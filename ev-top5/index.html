@@ -1,0 +1,173 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>국내 EV 판매 Top 5</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: 요약 수치 한 줄 → 모델별 막대 + 제조사 점유 → 원본 표 */
+:root {
+  --bg: #f4f6f7; --surface: #ffffff; --fg: #18252b; --muted: #5b6b72; --line: #dbe2e5;
+  --accent: #1f4e5f;
+  --tesla: #c8463d; --kia: #1f6f8b; --hyundai: #7a8f3a;
+  --sans: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12191c; --surface: #1a2428; --fg: #e6edef; --muted: #93a4ab; --line: #2c3a40;
+  --accent: #7cc0d6; --tesla: #e8746a; --kia: #5fb0cf; --hyundai: #a9c25e; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #12191c; --surface: #1a2428; --fg: #e6edef; --muted: #93a4ab; --line: #2c3a40;
+  --accent: #7cc0d6; --tesla: #e8746a; --kia: #5fb0cf; --hyundai: #a9c25e; color-scheme: dark }
+
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 32px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 24px; }
+header { display: grid; gap: 4px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+h1 { margin: 0; font-size: 28px; font-weight: 700; text-wrap: balance; }
+h2 { margin: 0 0 14px; font-size: 16px; font-weight: 700; }
+.sub { color: var(--muted); margin: 0; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; display: grid; gap: 2px; }
+.kpi .label { font-size: 13px; color: var(--muted); }
+.kpi .value { font-size: 26px; font-weight: 700; }
+.kpi .note { font-size: 13px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 20px; min-width: 0; }
+
+.bars { display: grid; gap: 12px; }
+.bar-row { display: grid; grid-template-columns: 24px 96px minmax(0, 1fr); align-items: center; gap: 10px; }
+.rank { font-family: var(--mono); color: var(--muted); font-size: 13px; text-align: center; }
+.model { font-weight: 500; font-size: 14px; }
+.model small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+.track { position: relative; height: 28px; background: color-mix(in srgb, var(--line) 45%, transparent); border-radius: 4px; }
+.fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+.val { position: absolute; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+.val.in { color: #fff; right: 8px; }
+.val.out { color: var(--fg); }
+
+.stack { display: flex; height: 18px; border-radius: 4px; overflow: hidden; margin-bottom: 16px; }
+.stack span { display: block; height: 100%; }
+.legend { display: grid; gap: 10px; }
+.legend-row { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto auto; gap: 8px; align-items: baseline; font-size: 14px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; align-self: center; }
+.legend-row .pct { font-weight: 700; text-align: right; }
+.legend-row .cnt { color: var(--muted); font-size: 12px; text-align: right; white-space: nowrap; }
+.insight { margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+th { font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: .04em; }
+td.r, th.r { text-align: right; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+.chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+footer { color: var(--muted); font-size: 12px; display: grid; gap: 2px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">신규등록 기준 · <span id="period"></span></span>
+    <h1>국내 전기차 판매 Top 5</h1>
+    <p class="sub">한 달간 국내에서 새로 등록된 전기차 중 상위 5개 모델입니다.</p>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="grid">
+    <div class="panel">
+      <h2>모델별 신규등록 대수</h2>
+      <div class="bars" id="bars"></div>
+    </div>
+    <div class="panel">
+      <h2>제조사별 비중 (Top 5 안에서)</h2>
+      <div class="stack" id="stack" role="img" aria-label="제조사별 비중 막대"></div>
+      <div class="legend" id="legend"></div>
+      <p class="insight" id="insight"></p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>원본 데이터</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>순위</th><th>모델명</th><th>제조사</th><th class="r">신규등록 대수</th><th class="r">Top 5 내 비중</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>데이터: 국내EV판매_Top5.csv (출처 링크 열: <span id="src"></span>)</span>
+    <span>비중은 전체 전기차 시장이 아니라 Top 5 합계 대비 값입니다.</span>
+  </footer>
+</div>
+
+<script>
+const DATA = [
+  { rank: 1, model: "모델 Y", maker: "테슬라", units: 11421 },
+  { rank: 2, model: "EV5", maker: "기아", units: 2252 },
+  { rank: 3, model: "EV3", maker: "기아", units: 1893 },
+  { rank: 4, model: "PV5", maker: "기아", units: 1520 },
+  { rank: 5, model: "아이오닉 5", maker: "현대자동차", units: 1313 },
+];
+const PERIOD = "2026년 9월";
+const SOURCE = "https://daitsoev.co.kr/sales";
+const COLOR = { "테슬라": "var(--tesla)", "기아": "var(--kia)", "현대자동차": "var(--hyundai)" };
+
+const fmt = n => n.toLocaleString("ko-KR");
+const pct = (n, t) => (n / t * 100).toFixed(1) + "%";
+const total = DATA.reduce((s, d) => s + d.units, 0);
+const max = Math.max(...DATA.map(d => d.units));
+
+document.getElementById("period").textContent = PERIOD;
+document.getElementById("src").textContent = SOURCE;
+
+const makers = [];
+DATA.forEach(d => {
+  let m = makers.find(x => x.name === d.maker);
+  if (!m) makers.push(m = { name: d.maker, units: 0, models: 0 });
+  m.units += d.units; m.models++;
+});
+makers.sort((a, b) => b.units - a.units);
+
+const leader = DATA[0], runnerUp = DATA[1];
+document.getElementById("kpis").innerHTML = [
+  ["Top 5 합계", fmt(total) + "대", "5개 모델 신규등록 합"],
+  ["1위 모델", leader.model, `${fmt(leader.units)}대 · 비중 ${pct(leader.units, total)}`],
+  ["1위와 2위 격차", `${(leader.units / runnerUp.units).toFixed(1)}배`, `${leader.model} ${fmt(leader.units)} vs ${runnerUp.model} ${fmt(runnerUp.units)}`],
+  ["모델 수 최다 제조사", makers.slice().sort((a, b) => b.models - a.models)[0].name, `Top 5 중 ${makers.slice().sort((a, b) => b.models - a.models)[0].models}개 모델`],
+].map(([l, v, n]) => `<div class="kpi"><span class="label">${l}</span><span class="value ${/\d/.test(v) ? "num" : ""}">${v}</span><span class="note">${n}</span></div>`).join("");
+
+document.getElementById("bars").innerHTML = DATA.map(d => {
+  const w = d.units / max * 100;
+  const inside = w > 35;
+  return `<div class="bar-row">
+    <span class="rank">${d.rank}</span>
+    <span class="model">${d.model}<small>${d.maker}</small></span>
+    <div class="track" aria-label="${d.model} ${fmt(d.units)}대">
+      <div class="fill" style="width:${w}%;background:${COLOR[d.maker]}"></div>
+      <span class="val ${inside ? "in" : "out"}" style="${inside ? "" : `left:calc(${w}% + 8px)`}">${fmt(d.units)}</span>
+    </div>
+  </div>`;
+}).join("");
+
+document.getElementById("stack").innerHTML = makers.map(m =>
+  `<span style="width:${m.units / total * 100}%;background:${COLOR[m.name]}" title="${m.name} ${pct(m.units, total)}"></span>`).join("");
+document.getElementById("legend").innerHTML = makers.map(m =>
+  `<div class="legend-row"><span class="sw" style="background:${COLOR[m.name]}"></span><span>${m.name} <span style="color:var(--muted);font-size:13px">(${m.models}개 모델)</span></span><span class="pct num">${pct(m.units, total)}</span><span class="cnt num">${fmt(m.units)}대</span></div>`).join("");
+
+const kia = makers.find(m => m.name === "기아");
+document.getElementById("insight").textContent =
+  `테슬라는 모델 하나로 Top 5의 ${pct(leader.units, total)}를 차지합니다. 기아는 ${kia.models}개 모델을 올렸지만 합계 ${fmt(kia.units)}대로 모델 Y의 절반에 못 미칩니다.`;
+
+document.getElementById("tbody").innerHTML = DATA.map(d =>
+  `<tr><td class="num">${d.rank}</td><td>${d.model}</td><td><span class="chip"><i style="background:${COLOR[d.maker]}"></i>${d.maker}</span></td><td class="r num">${fmt(d.units)}</td><td class="r num">${pct(d.units, total)}</td></tr>`).join("")
+  + `<tr><td></td><td><b>합계</b></td><td></td><td class="r num"><b>${fmt(total)}</b></td><td class="r num"><b>100.0%</b></td></tr>`;
+</script>
+
+</body></html>

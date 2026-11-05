@@ -1,0 +1,14 @@
+{
+  "description": "수집 자료에서 도출한 부품사 전략팀용 분석·제언 3가지. 확정된 고객 요구나 정량 전망이 아닙니다.",
+  "fixed": true,
+  "source": {
+    "kind": "file",
+    "name": "recommendations.json",
+    "url": "/_blob/cc3c30e901a8c662a23feb02696c241d"
+  },
+  "title": "부품사 대응 제언",
+  "updated": {
+    "at": "2026-10-18T01:15:00Z",
+    "by": "Claude"
+  }
+}

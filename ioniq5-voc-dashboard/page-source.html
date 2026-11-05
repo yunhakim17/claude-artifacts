@@ -1,0 +1,417 @@
+<style>
+.vx{font-family:var(--font-anthropic-sans);color:var(--color-fg);display:flex;flex-direction:column;gap:var(--cds-gap-lg)}
+.vx-head h1{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);margin:0 0 var(--cds-gap-xs)}
+.vx-head p{margin:0;color:var(--color-fg-muted);font-size:var(--cds-font-size-body)}
+.vx-head .vx-take{color:var(--color-fg);margin-top:var(--cds-gap-xs)}
+.vx-take b{font-weight:600}
+.vx-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,9rem),1fr));gap:var(--cds-gap-md)}
+.vx-kpi,.vx-card{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-lg)}
+.vx-kpi .lbl{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);display:flex;align-items:center;gap:var(--cds-gap-xs)}
+.vx-kpi .num{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);font-variant-numeric:tabular-nums;margin-top:var(--cds-gap-xs)}
+.vx-kpi .sub{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);font-variant-numeric:tabular-nums}
+.vx-sw{display:inline-block;width:.625rem;height:.625rem;border-radius:2px}
+.vx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,24rem),1fr));gap:var(--cds-gap-md)}
+.vx-card h2{font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium);margin:0}
+.vx-card .note{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);margin:var(--cds-gap-xs) 0 var(--cds-gap-md)}
+.vx-legend{display:flex;gap:var(--cds-gap-md);font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);margin-bottom:var(--cds-gap-sm);flex-wrap:wrap}
+.vx-legend span{display:inline-flex;align-items:center;gap:var(--cds-gap-xs)}
+.vx-chart{position:relative;min-height:240px}
+.vx-chart svg{display:block}
+.vx-tip{position:absolute;pointer-events:none;background:var(--cds-surface-popover);border:1px solid var(--cds-border);border-radius:var(--cds-radius);box-shadow:var(--cds-shadow-popover);padding:var(--cds-pad-xs) var(--cds-pad-sm);font-size:var(--cds-font-size-caption);white-space:nowrap;display:none;z-index:2}
+.vx-tip .t{color:var(--cds-text-secondary);margin-bottom:2px}
+.vx-tip .r{display:flex;align-items:center;gap:var(--cds-gap-xs);font-variant-numeric:tabular-nums}
+.vx-fail{display:flex;align-items:center;justify-content:center;gap:var(--cds-gap-xs);min-height:inherit;height:240px;color:var(--color-fg-muted);font-size:var(--cds-font-size-caption)}
+.vx-fail i{width:.375rem;height:.375rem;border-radius:50%;background:var(--color-bad)}
+.vx-tbl-wrap{overflow:auto}
+.vx-tbl-wrap.tall{max-height:26rem}
+.vx table{width:100%;border-collapse:collapse;font-size:var(--cds-font-size-caption);font-variant-numeric:tabular-nums}
+.vx th{text-align:left;font-weight:var(--cds-font-weight-medium);color:var(--color-fg-muted);border-bottom:1px solid var(--color-border-line);padding:var(--cds-pad-xs) var(--cds-pad-sm);position:sticky;top:0;background:var(--color-panel)}
+.vx td{border-bottom:1px solid var(--color-border-line);padding:var(--cds-pad-xs) var(--cds-pad-sm);vertical-align:top}
+.vx td.n,.vx th.n{text-align:right}
+.vx-bar{display:flex;justify-content:space-between;align-items:center;gap:var(--cds-gap-sm);flex-wrap:wrap}
+.vx-btn{font:inherit;font-size:var(--cds-font-size-caption);background:transparent;color:var(--color-fg);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-xs) var(--cds-pad-sm);cursor:pointer}
+.vx-btn:hover{background:var(--color-bg)}
+.vx-search{font:inherit;font-size:var(--cds-font-size-caption);color:var(--color-fg);background:var(--color-bg);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-xs) var(--cds-pad-sm);min-width:0;flex:1;max-width:16rem}
+.vx-pill{display:inline-block;padding:0 var(--cds-pad-xs);border-radius:var(--cds-radius);font-size:var(--cds-font-size-caption);white-space:nowrap}
+.vx-copied{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.vx [data-dash-source-state=empty]{color:transparent}
+.vx [data-dash-source-state=refreshing]{opacity:.5;transition:opacity var(--cds-dur-slow)}
+.vx-tools{display:flex;align-items:center;gap:var(--cds-gap-sm);flex-wrap:wrap;background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-sm) var(--cds-pad-md)}
+.vx-tools .grow{flex:1;min-width:10rem;font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.vx-tools .grow b{color:var(--color-fg);font-weight:600}
+.vx-btn.primary{background:var(--color-fg);color:var(--color-bg);border-color:var(--color-fg)}
+.vx-btn.primary:hover{opacity:.88;background:var(--color-fg)}
+.vx-btn[disabled]{opacity:.45;cursor:default}
+.vx-btn.link{border-color:transparent;text-decoration:underline;color:var(--color-fg-muted)}
+.vx-msg{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.vx-msg.bad{color:var(--color-bad)}
+.vx-msg.ok{color:var(--color-ok)}
+.vx-banner{display:none;font-size:var(--cds-font-size-caption);border:1px dashed var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-xs) var(--cds-pad-sm);color:var(--color-fg)}
+.vx-banner.on{display:block}
+</style>
+
+<div class="vx">
+  <header class="vx-head">
+    <h1 id="title">아이오닉5 VOC 긍·부정 키워드와 감정분석</h1>
+    <p id="subtitle">리뷰 30건(10개 페르소나 × 3건) · 실습용 가상 데이터</p>
+    <p class="vx-take dash-skeleton" id="takeaway">부정 리뷰 <b data-source="charge" data-field="부정합계" data-row="0">—</b>건 중 <b data-source="charge" data-field="주제부정" data-row="0">—</b>건(<b data-source="charge" data-field="비중" data-row="0">—</b>)이 <b data-source="charge" data-field="최다주제" data-row="0">—</b> 문제입니다. 이 주제의 경험 개선이 1순위 과제입니다.</p>
+  </header>
+
+  <section class="vx-tools" id="tools">
+    <button class="vx-btn primary" id="btn-up">CSV 업로드</button>
+    <input type="file" id="file-up" accept=".csv,text/csv" hidden>
+    <button class="vx-btn" id="btn-report">결과 보고서 다운로드</button>
+    <button class="vx-btn" id="btn-reset" hidden>원래 데이터로</button>
+    <span class="grow" id="tools-note">열: <b>번호, 고객유형, 리뷰, 주제, 감정</b> (주제·감정·리뷰는 필수) <button class="vx-btn link" id="btn-tpl">양식 받기</button></span>
+    <span class="vx-msg" id="tools-msg" role="status"></span>
+  </section>
+  <div class="vx-banner" id="banner"></div>
+
+  <section class="vx-kpis">
+    <div class="vx-kpi"><div class="lbl">전체 리뷰</div><div class="num dash-skeleton" data-source="totals" data-field="합계" data-row="0">—</div><div class="sub">건</div></div>
+    <div class="vx-kpi"><div class="lbl"><i class="vx-sw" id="sw-pos"></i>긍정</div><div class="num dash-skeleton" data-source="totals" data-field="긍정" data-row="0">—</div><div class="sub"><span data-source="totals" data-field="긍정비율" data-row="0">—</span> 비중</div></div>
+    <div class="vx-kpi"><div class="lbl"><i class="vx-sw" id="sw-neu"></i>중립</div><div class="num dash-skeleton" data-source="totals" data-field="중립" data-row="0">—</div><div class="sub"><span data-source="totals" data-field="중립비율" data-row="0">—</span> 비중</div></div>
+    <div class="vx-kpi"><div class="lbl"><i class="vx-sw" id="sw-neg"></i>부정</div><div class="num dash-skeleton" data-source="totals" data-field="부정" data-row="0">—</div><div class="sub"><span data-source="totals" data-field="부정비율" data-row="0">—</span> 비중</div></div>
+  </section>
+
+  <section class="vx-grid">
+    <div class="vx-card" id="stacked">
+      <h2>주제별 감정 구성 (누적 막대)</h2>
+      <p class="note">주제마다 긍정·중립·부정 리뷰 수를 쌓았습니다. 부정이 많은 순.</p>
+      <div class="vx-legend" id="leg-stack"></div>
+      <div class="vx-chart dash-skeleton" id="chart-stack" data-source="topics"></div>
+    </div>
+    <div class="vx-card" id="keywords">
+      <h2>긍·부정 키워드 Top 5 빈도</h2>
+      <p class="note">왼쪽 부정, 오른쪽 긍정. 한 키워드를 언급한 리뷰 수.</p>
+      <div class="vx-legend" id="leg-kw"></div>
+      <div class="vx-chart dash-skeleton" id="chart-kw" data-source="keywords"></div>
+    </div>
+  </section>
+
+  <section class="vx-card" id="cloud">
+    <h2>VOC 워드클라우드</h2>
+    <p class="note">리뷰 원문에서 자주 나온 단어. 크기 = 언급 리뷰 수, 색 = 그 단어가 나온 리뷰의 우세 감정. 단어를 누르면 아래 원문이 걸러집니다.</p>
+    <div class="vx-legend"><span><i class="vx-sw" id="cl-pos"></i>긍정 우세</span><span><i class="vx-sw" id="cl-neg"></i>부정 우세</span><span><i class="vx-sw" id="cl-neu"></i>중립·동률</span></div>
+    <div class="vx-chart dash-skeleton" id="chart-cloud" data-source="cloud" style="min-height:300px"></div>
+  </section>
+
+  <section class="vx-grid">
+    <div class="vx-card" id="sheet-kw">
+      <div class="vx-bar"><h2>키워드 Top 5 표</h2><span><span class="vx-copied" id="cp-kw-msg"></span> <button class="vx-btn" id="cp-kw">시트용 복사</button></span></div>
+      <p class="note">Google Sheets에 붙여넣기 → 차트 유형 '누적 막대'. 근거 리뷰 번호 포함.</p>
+      <div class="vx-tbl-wrap"><table id="tbl-kw" data-source="keywords" data-row-key="키워드"><thead><tr></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="vx-card" id="sheet-topic">
+      <div class="vx-bar"><h2>주제 × 감정 표</h2><span><span class="vx-copied" id="cp-tp-msg"></span> <button class="vx-btn" id="cp-tp">시트용 복사</button></span></div>
+      <p class="note">누적 막대 차트의 원본 표. 행 = 주제, 열 = 감정.</p>
+      <div class="vx-tbl-wrap"><table id="tbl-topic" data-source="topics" data-row-key="주제"><thead><tr></tr></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <section class="vx-card" id="reviews">
+    <div class="vx-bar"><h2 id="rv-title">리뷰 원문</h2><input class="vx-search" id="q" type="search" placeholder="검색 (예: 충전, 부정)"></div>
+    <p class="note">분류 근거 확인용. 주제·감정 라벨은 입력 데이터 기준.</p>
+    <div class="vx-tbl-wrap tall"><table id="tbl-rv" data-source="reviews" data-row-key="번호"><thead><tr></tr></thead><tbody></tbody></table></div>
+  </section>
+</div>
+<script>
+window.vxAnalyze=function(reviews){
+  const S=['긍정','중립','부정'];
+  const KW={
+    긍정:[['넓은 실내·공간',['넓','공간']],['디자인(외관·실내)',['디자인','외관','화면 배치','깔끔']],['승차감·정숙성',['정숙','승차감','시트가 편']],
+      ['경제성(전비·유지비)',['전비','유지비','유류비','연비']],['편의기능(OTA·V2L)',['업데이트','전기포트','캠핑','V2L']],['가속·주행성능',['가속','핸들링']],
+      ['상담 친절',['상담','친절']],['전반적 만족',['만족']]],
+    부정:[['충전소 부족·대기',['자리가 차','충전소 찾기','충전 대기','충전소가 부족','대기']],['충전 결제·정산 분산',['회원카드','정산','충전 앱']],
+      ['충전기 고장·속도 불안정',['고장','들쭉날쭉','충전 속도']],['서비스센터 대기·대차',['서비스센터','예약','대차']],['겨울철 주행거리 감소',['겨울','주행가능거리']],
+      ['차량 가격 부담',['차값','할부','연봉']],['고속 풍절음',['풍절음','소음']]]};
+  const WORDS=[['충전','충전'],['충전기','충전기'],['급속충전','급속충전'],['충전소','충전소'],['휴게소','휴게소'],['고속','고속'],['속도','속도'],['대기','대기'],['고장','고장'],
+    ['겨울','겨울'],['주행거리','주행가능거리'],['정숙','정숙'],['승차감','승차감'],['가속감','가속감'],['회생제동','회생제동'],['전비','전비'],['실내','실내'],['넓은','넓'],
+    ['공간','공간'],['수납','수납'],['디자인','디자인'],['외관','외관'],['화면','화면'],['시트','시트'],['캠핑','캠핑'],['업데이트','업데이트'],['서비스센터','서비스센터'],
+    ['예약','예약'],['대차','대차'],['상담','상담'],['보조금','보조금'],['차값','차값'],['할부','할부'],['보험료','보험료'],['유지비','유지비'],['유류비','유류비'],
+    ['풍절음','풍절음'],['배터리','배터리'],['앱','앱'],['회원카드','회원카드'],['정산','정산'],['아파트','아파트'],['주차','주차'],['가족','가족'],['만족','만족'],
+    ['스트레스','스트레스'],['부담','부담'],['중고','중고'],['경고등','경고등'],['깔끔','깔끔'],['직관적','직관']];
+  const cnt=k=>reviews.filter(r=>r['감정']===k).length;
+  const t=reviews.length;
+  const totals=[{합계:t,긍정:cnt('긍정'),중립:cnt('중립'),부정:cnt('부정'),긍정비율:t?cnt('긍정')/t:0,중립비율:t?cnt('중립')/t:0,부정비율:t?cnt('부정')/t:0}];
+  const topicNames=[...new Set(reviews.map(r=>r['주제']))];
+  const topics=topicNames.map(n=>{const m=reviews.filter(r=>r['주제']===n);const o={주제:n};S.forEach(s=>o[s]=m.filter(r=>r['감정']===s).length);o.합계=m.length;return o;})
+    .sort((a,b)=>b.부정-a.부정||b.합계-a.합계);
+  const worst=topics[0]||{주제:'-',부정:0};
+  const charge=[{부정합계:totals[0].부정,충전부정:worst.부정,비중:totals[0].부정?worst.부정/totals[0].부정:0,주제:worst.주제}];
+  const keywords=[];
+  ['긍정','부정'].forEach(s=>{const pool=reviews.filter(r=>r['감정']===s);
+    KW[s].map(([k,ps])=>{const m=pool.filter(r=>ps.some(p=>r['리뷰'].includes(p)));return {감정:s,키워드:k,빈도:m.length,'근거 리뷰 번호':m.map(r=>'#'+r['번호']).join(' ')};})
+      .filter(x=>x.빈도>0).sort((a,b)=>b.빈도-a.빈도).slice(0,5).forEach((x,i)=>keywords.push({감정:x.감정,순위:i+1,키워드:x.키워드,빈도:x.빈도,'근거 리뷰 번호':x['근거 리뷰 번호']}));});
+  const cloud=WORDS.map(([단어,p])=>{const m=reviews.filter(r=>r['리뷰'].includes(p));
+    return {단어,검색어:p,언급:m.length,긍정:m.filter(r=>r['감정']==='긍정').length,중립:m.filter(r=>r['감정']==='중립').length,부정:m.filter(r=>r['감정']==='부정').length,리뷰:m.map(r=>'#'+r['번호']).join(' ')};}).filter(w=>w.언급>0);
+  return {totals,charge,topics,keywords,cloud};
+};
+</script>
+
+<script>
+(function(){
+  const SENTS=['긍정','중립','부정'];
+  const num=v=>Number(v);
+  dash.calc('totals',{inputs:['topics'],title:'감정별 합계',description:'주제 × 감정 표의 열을 더하고 전체 대비 비중을 구함.',
+    fn:(topics)=>{const s=k=>topics.reduce((a,r)=>a+Number(r[k]),0);const t=s('합계');
+      return [{합계:t,긍정:s('긍정'),중립:s('중립'),부정:s('부정'),긍정비율:s('긍정')/t,중립비율:s('중립')/t,부정비율:s('부정')/t}];}});
+  dash.calc('charge',{inputs:['topics'],title:'부정이 가장 많은 주제',description:'부정 리뷰 전체 중 부정이 가장 많은 주제가 차지하는 비중.',
+    fn:(topics)=>{const neg=topics.reduce((a,r)=>a+Number(r['부정']),0);const w=topics.slice().sort((a,b)=>Number(b['부정'])-Number(a['부정']))[0];
+      return [{부정합계:neg,최다주제:w['주제'],주제부정:Number(w['부정']),비중:Number(w['부정'])/neg}];}});
+  dash.calc('cloud',{inputs:['reviews'],title:'워드클라우드 단어 빈도',description:'정해 둔 단어 목록마다 그 단어가 들어간 리뷰 수와 감정별 수를 셈.',
+    fn:(reviews)=>{
+      const words=[['충전','충전'],['충전기','충전기'],['급속충전','급속충전'],['충전소','충전소'],['휴게소','휴게소'],['고속','고속'],['속도','속도'],['대기','대기'],['고장','고장'],
+        ['겨울','겨울'],['주행거리','주행가능거리'],['정숙','정숙'],['승차감','승차감'],['가속감','가속감'],['회생제동','회생제동'],['전비','전비'],['실내','실내'],['넓은','넓'],
+        ['공간','공간'],['수납','수납'],['디자인','디자인'],['외관','외관'],['화면','화면'],['시트','시트'],['캠핑','캠핑'],['업데이트','업데이트'],['서비스센터','서비스센터'],
+        ['예약','예약'],['대차','대차'],['상담','상담'],['보조금','보조금'],['차값','차값'],['할부','할부'],['보험료','보험료'],['유지비','유지비'],['유류비','유류비'],
+        ['풍절음','풍절음'],['배터리','배터리'],['앱','앱'],['회원카드','회원카드'],['정산','정산'],['아파트','아파트'],['주차','주차'],['가족','가족'],['만족','만족'],
+        ['스트레스','스트레스'],['부담','부담'],['중고','중고'],['경고등','경고등'],['깔끔','깔끔'],['직관적','직관']];
+      return words.map(([단어,p])=>{const m=reviews.filter(r=>r['리뷰'].includes(p));
+        return {단어,검색어:p,언급:m.length,긍정:m.filter(r=>r['감정']==='긍정').length,중립:m.filter(r=>r['감정']==='중립').length,부정:m.filter(r=>r['감정']==='부정').length,리뷰:m.map(r=>'#'+r['번호']).join(' ')};}).filter(w=>w.언급>0);
+    }});
+
+  /* ---------- 데이터 출처: 대시보드 데이터 또는 업로드 파일 ---------- */
+  let UP=null; // {name, reviews, a}
+  const RV_COLS=['번호','페르소나','리뷰','주제','감정'];
+  function get(id){
+    if(UP){
+      if(id==='reviews')return {status:'ok',data:UP.reviews,columns:RV_COLS};
+      const d=UP.a[id];return {status:'ok',data:d,columns:d.length?Object.keys(d[0]):[]};
+    }
+    const d=dash.data(id);if(d.status!=='ok')return d;
+    let rows=d.data;
+    if(id==='topics')rows=rows.map(r=>({주제:r['주제'],긍정:num(r['긍정']),중립:num(r['중립']),부정:num(r['부정']),합계:num(r['합계'])}));
+    if(id==='keywords')rows=rows.map(r=>({...r,순위:num(r['순위']),빈도:num(r['빈도'])}));
+    return {status:'ok',data:rows,columns:d.columns};
+  }
+
+  const colorOf=()=>({긍정:dash.colors[0],중립:'var(--cds-chart-muted)',부정:dash.colors[1]});
+  const pct=d3.format('.0%');
+  function legend(id,keys){const c=colorOf();const el=document.getElementById(id);el.textContent='';
+    keys.forEach(k=>{const s=document.createElement('span');const i=document.createElement('i');i.className='vx-sw';i.style.background=c[k];s.append(i,document.createTextNode(k));el.append(s);});}
+  function fail(el){el.textContent='';const d=document.createElement('div');d.className='vx-fail';d.append(document.createElement('i'),document.createTextNode('Failed to load'));el.append(d);}
+  function measure(svg,texts){const g=svg.append('g');let m=0;texts.forEach(t=>{const n=g.append('text').text(t).node();m=Math.max(m,n.getComputedTextLength());});g.remove();return m;}
+  function tip(box){let t=box.querySelector('.vx-tip');if(!t){t=document.createElement('div');t.className='vx-tip';box.append(t);}return t;}
+  function showTip(box,t,ev,title,rows){t.textContent='';const h=document.createElement('div');h.className='t';h.textContent=title;t.append(h);
+    rows.forEach(([c,k,v])=>{const r=document.createElement('div');r.className='r';if(c){const i=document.createElement('i');i.className='vx-sw';i.style.background=c;r.append(i);}r.append(document.createTextNode(k+'  '+v));t.append(r);});
+    t.style.display='block';const b=box.getBoundingClientRect();let x=ev.clientX-b.left+12,y=ev.clientY-b.top+12;
+    const w=t.offsetWidth;if(x+w>b.width)x=Math.max(0,ev.clientX-b.left-w-12);t.style.left=x+'px';t.style.top=y+'px';}
+  function gate(el,d){if(d.status==='error'||d.status==='connect'){el.classList.remove('dash-skeleton');fail(el);return false;}
+    if(d.status!=='ok'){el.textContent='';return false;}el.classList.remove('dash-skeleton');el.textContent='';return true;}
+
+  function drawStack(){
+    const el=document.getElementById('chart-stack');const d=get('topics');if(!gate(el,d))return;legend('leg-stack',SENTS);
+    const rows=d.data.slice().sort((a,b)=>b.부정-a.부정||b.합계-a.합계);if(!rows.length)return;
+    const W=el.clientWidth||400,bar=28,gap=14,top=4,H=top+rows.length*(bar+gap)+24;
+    const svg=d3.select(el).append('svg').attr('width','100%').attr('viewBox',`0 0 ${W} ${H}`).style('font-size','var(--cds-font-size-caption)');
+    const ml=Math.ceil(measure(svg,rows.map(r=>r.주제)))+10,mr=28;
+    const x=d3.scaleLinear([0,d3.max(rows,r=>r.합계)],[ml,W-mr]);
+    const y=d3.scaleBand(rows.map(r=>r.주제),[top,top+rows.length*(bar+gap)]).paddingInner(gap/(bar+gap));
+    const ax=svg.append('g').attr('transform',`translate(0,${top+rows.length*(bar+gap)})`).call(d3.axisBottom(x).ticks(Math.min(8,d3.max(rows,r=>r.합계))).tickFormat(d3.format('d')).tickSize(-(rows.length*(bar+gap))));
+    ax.attr('font-size',null).attr('font-family',null);ax.select('.domain').remove();
+    ax.selectAll('line').attr('stroke','var(--cds-chart-grid)');ax.selectAll('text').attr('fill','var(--color-fg-muted)');
+    const c=colorOf();const st=d3.stack().keys(SENTS)(rows);const t=tip(el);
+    st.forEach(layer=>{svg.append('g').selectAll('rect').data(layer).join('rect')
+      .attr('x',p=>x(p[0])).attr('width',p=>Math.max(0,x(p[1])-x(p[0])-(p[1]>p[0]?1:0))).attr('y',p=>y(p.data.주제)).attr('height',y.bandwidth())
+      .attr('fill',c[layer.key]).attr('rx',3)
+      .on('mousemove',(ev,p)=>showTip(el,t,ev,p.data.주제+' · 총 '+p.data.합계+'건',SENTS.map(k=>[c[k],k,p.data[k]+'건 ('+pct(p.data[k]/p.data.합계)+')'])))
+      .on('mouseleave',()=>t.style.display='none');
+      svg.append('g').selectAll('text').data(layer.filter(p=>p[1]-p[0]>0&&x(p[1])-x(p[0])>18)).join('text')
+      .attr('x',p=>(x(p[0])+x(p[1]))/2).attr('y',p=>y(p.data.주제)+y.bandwidth()/2).attr('dy','0.35em').attr('text-anchor','middle')
+      .attr('fill',layer.key==='중립'?'var(--color-fg)':'var(--color-bg)').attr('pointer-events','none').text(p=>p[1]-p[0]);});
+    svg.append('g').selectAll('text').data(rows).join('text').attr('x',ml-8).attr('y',r=>y(r.주제)+y.bandwidth()/2).attr('dy','0.35em').attr('text-anchor','end').attr('fill','var(--color-fg)').text(r=>r.주제);
+    svg.append('g').selectAll('text').data(rows).join('text').attr('x',r=>x(r.합계)+6).attr('y',r=>y(r.주제)+y.bandwidth()/2).attr('dy','0.35em').attr('fill','var(--color-fg-muted)').text(r=>r.합계);
+  }
+
+  function drawKw(){
+    const el=document.getElementById('chart-kw');const d=get('keywords');if(!gate(el,d))return;legend('leg-kw',['부정','긍정']);
+    const rows=d.data;if(!rows.length)return;
+    const ranks=[...new Set(rows.map(r=>r.순위))].sort((a,b)=>a-b);
+    const W=el.clientWidth||400,rowH=46,H=ranks.length*rowH+6,cx=W/2,pad=26;
+    const x=d3.scaleLinear([0,d3.max(rows,r=>r.빈도)],[0,cx-pad]);
+    const svg=d3.select(el).append('svg').attr('width','100%').attr('viewBox',`0 0 ${W} ${H}`).style('font-size','var(--cds-font-size-caption)');
+    const c=colorOf();const t=tip(el);
+    svg.append('line').attr('x1',cx).attr('x2',cx).attr('y1',0).attr('y2',H).attr('stroke','var(--cds-chart-axis)');
+    rows.forEach(r=>{const i=ranks.indexOf(r.순위);const yb=i*rowH+22,bh=16;const neg=r.감정==='부정';const w=x(r.빈도);
+      const lab=svg.append('text').attr('x',neg?cx-6:cx+6).attr('y',yb-6).attr('text-anchor',neg?'end':'start').attr('fill','var(--color-fg)').text(r.순위+'. '+r.키워드);
+      let s=r.순위+'. '+r.키워드;while(lab.node().getComputedTextLength()>cx-10&&s.length>3){s=s.slice(0,-1);lab.text(s+'…');}
+      svg.append('rect').attr('x',neg?cx-w:cx).attr('width',Math.max(0,w)).attr('y',yb).attr('height',bh).attr('rx',3).attr('fill',c[r.감정])
+        .on('mousemove',ev=>showTip(el,t,ev,r.감정+' '+r.순위+'위',[[c[r.감정],r.키워드,r.빈도+'건'],[null,'근거',r['근거 리뷰 번호']]]))
+        .on('mouseleave',()=>t.style.display='none');
+      svg.append('text').attr('x',neg?cx-w-5:cx+w+5).attr('y',yb+bh/2).attr('dy','0.35em').attr('text-anchor',neg?'end':'start').attr('fill','var(--color-fg-muted)').text(r.빈도);});
+  }
+
+  function drawCloud(){
+    const el=document.getElementById('chart-cloud');const c=colorOf();
+    document.getElementById('cl-pos').style.background=c.긍정;document.getElementById('cl-neg').style.background=c.부정;document.getElementById('cl-neu').style.background=c.중립;
+    const d=get('cloud');if(!gate(el,d))return;
+    const words=d.data.slice().sort((a,b)=>b.언급-a.언급||a.단어.localeCompare(b.단어));if(!words.length)return;
+    const W=el.clientWidth||400,H=Math.max(300,Math.min(420,Math.round(W*0.42)));
+    const maxF=Math.max(28,Math.min(72,W/9)),minF=13;
+    const fs=d3.scaleSqrt([1,Math.max(2,d3.max(words,w=>w.언급))],[minF,maxF]);
+    const svg=d3.select(el).append('svg').attr('width','100%').attr('viewBox',`0 0 ${W} ${H}`);
+    const tone=w=>w.긍정>w.부정?'긍정':w.부정>w.긍정?'부정':'중립';
+    const placed=[];const t=tip(el);const hit=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
+    words.forEach(w=>{
+      const tx=svg.append('text').text(w.단어).attr('text-anchor','middle').attr('dominant-baseline','central')
+        .style('font-family','var(--font-anthropic-sans)').style('font-size',fs(w.언급)+'px').style('font-weight',w.언급>=3?600:w.언급>=2?500:400)
+        .attr('fill',c[tone(w)]).attr('opacity',tone(w)==='중립'?1:(w.언급>=2?1:.82)).style('cursor','pointer');
+      const bb=tx.node().getBBox();const bw=bb.width+6,bh=bb.height*.86;let ok=false;
+      for(let s=0;s<3000&&!ok;s++){const a=s*0.35,r=1.6*a;const x=W/2+r*Math.cos(a)*1.6,y=H/2+r*Math.sin(a);
+        const box={x:x-bw/2,y:y-bh/2,w:bw,h:bh};
+        if(box.x<2||box.y<2||box.x+box.w>W-2||box.y+box.h>H-2)continue;
+        if(placed.every(p=>!hit(box,p))){placed.push(box);tx.attr('x',x).attr('y',y);ok=true;}}
+      if(!ok){tx.remove();return;}
+      tx.on('mousemove',ev=>showTip(el,t,ev,w.단어+' · '+w.언급+'개 리뷰',[[c.긍정,'긍정',w.긍정+'건'],[c.중립,'중립',w.중립+'건'],[c.부정,'부정',w.부정+'건'],[null,'리뷰',w.리뷰]]))
+        .on('mouseleave',()=>t.style.display='none')
+        .on('click',()=>{q.value=w.검색어;filterRv();document.getElementById('reviews').scrollIntoView({behavior:'smooth',block:'start'});});
+    });
+  }
+
+  function table(id,ds,numeric,decorate){
+    const tb=document.getElementById(id);const d=get(ds);const head=tb.querySelector('thead tr'),body=tb.querySelector('tbody');
+    if(d.status!=='ok'){body.textContent='';return null;}
+    const cols=d.columns&&d.columns.length?d.columns:Object.keys(d.data[0]||{});head.textContent='';
+    cols.forEach(cn=>{const th=document.createElement('th');if(!UP)th.dataset.field=cn;th.textContent=cn;if(numeric.includes(cn))th.className='n';head.append(th);});
+    body.textContent='';d.data.forEach(r=>{const tr=document.createElement('tr');cols.forEach(cn=>{const td=document.createElement('td');if(numeric.includes(cn))td.className='n';
+      if(decorate&&decorate[cn])decorate[cn](td,r[cn]);else td.textContent=r[cn];tr.append(td);});body.append(tr);});
+    return {cols,rows:d.data};
+  }
+  function pill(td,v){const c=colorOf()[v];const s=document.createElement('span');s.className='vx-pill';s.textContent=v;
+    if(v==='중립'||!c){s.style.border='1px solid var(--color-border-line)';}else{s.style.background=c;s.style.color='var(--color-bg)';}td.append(s);}
+  const tsv=(t)=>t?[t.cols.join('\t'),...t.rows.map(r=>t.cols.map(c=>String(r[c]).replace(/\t|\n/g,' ')).join('\t'))].join('\n'):'';
+  let tk=null,tt=null;
+  function copy(btn,msg,getT){document.getElementById(btn).addEventListener('click',async()=>{const m=document.getElementById(msg);const s=tsv(getT());
+    try{await navigator.clipboard.writeText(s);m.textContent='복사됨';}catch(e){m.textContent='복사가 막혀 있어요. 표를 드래그해 복사하세요';}setTimeout(()=>m.textContent='',2500);});}
+  copy('cp-kw','cp-kw-msg',()=>tk);copy('cp-tp','cp-tp-msg',()=>tt);
+
+  const q=document.getElementById('q');
+  function filterRv(){const s=q.value.trim();document.querySelectorAll('#tbl-rv tbody tr').forEach(tr=>{tr.style.display=!s||tr.textContent.includes(s)?'':'none';});}
+  q.addEventListener('input',filterRv);
+
+  function fill(){
+    const tot=get('totals'),ch=get('charge');
+    document.querySelectorAll('.vx-kpi .num, .vx-kpi .sub span').forEach(el=>{const f=el.dataset.field;if(tot.status!=='ok'||!tot.data.length){el.textContent='—';return;}
+      el.classList.remove('dash-skeleton');const v=tot.data[0][f];el.textContent=f.endsWith('비율')?pct(v):d3.format(',')(v);});
+    const tk2=document.getElementById('takeaway');
+    if(ch.status==='ok'&&ch.data.length){tk2.classList.remove('dash-skeleton');
+      const v=ch.data[0];const map={부정합계:v.부정합계,주제부정:v.주제부정??v.충전부정,비중:pct(v.비중),최다주제:v.최다주제??v.주제};
+      tk2.querySelectorAll('b[data-field]').forEach(el=>{el.textContent=map[el.dataset.field];});}
+    const c=colorOf();document.getElementById('sw-pos').style.background=c.긍정;document.getElementById('sw-neu').style.background=c.중립;document.getElementById('sw-neg').style.background=c.부정;
+    const rv=get('reviews');document.getElementById('rv-title').textContent='리뷰 원문 '+(rv.status==='ok'?rv.data.length+'건':'');
+  }
+
+  function drawAll(){
+    fill();drawStack();drawKw();drawCloud();
+    tk=table('tbl-kw','keywords',['순위','빈도'],{감정:pill});
+    tt=table('tbl-topic','topics',['긍정','중립','부정','합계']);
+    table('tbl-rv','reviews',['번호'],{감정:pill});filterRv();
+  }
+  dash.onData(drawAll);
+
+  /* ---------- 업로드 ---------- */
+  const msgEl=document.getElementById('tools-msg');
+  function say(t,kind){msgEl.textContent=t;msgEl.className='vx-msg'+(kind?' '+kind:'');}
+  function parseCSV(t){t=t.replace(/^﻿/,'');const rows=[];let r=[],f='',inq=false;
+    for(let i=0;i<t.length;i++){const ch=t[i];
+      if(inq){if(ch==='"'){if(t[i+1]==='"'){f+='"';i++;}else inq=false;}else f+=ch;}
+      else if(ch==='"')inq=true;else if(ch===','){r.push(f);f='';}
+      else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&t[i+1]==='\n')i++;r.push(f);rows.push(r);r=[];f='';}else f+=ch;}
+    if(f!==''||r.length){r.push(f);rows.push(r);}
+    return rows.filter(x=>x.some(v=>v.trim()!==''));}
+  const SENT_MAP={긍정:'긍정',positive:'긍정',pos:'긍정','+':'긍정',부정:'부정',negative:'부정',neg:'부정','-':'부정',중립:'중립',neutral:'중립',neu:'중립'};
+  function toReviews(table){
+    const h=table[0].map(x=>x.trim());const find=re=>h.findIndex(x=>re.test(x));
+    const iR=find(/리뷰|review|내용|의견|텍스트|text/i),iT=find(/주제|topic|카테고리|분류/i),iS=find(/감정|sentiment|극성/i),
+      iN=find(/^번호$|^no\.?$|^id$|번호/i),iP=find(/페르소나|고객|persona|유형/i);
+    const miss=[[iR,'리뷰'],[iT,'주제'],[iS,'감정']].filter(([i])=>i<0).map(([,n])=>n);
+    if(miss.length)throw new Error(miss.join('·')+' 열을 찾지 못했어요. 첫 줄에 열 이름이 있어야 합니다.');
+    const out=[];const bad=[];
+    table.slice(1).forEach((row,k)=>{const txt=(row[iR]||'').trim();if(!txt)return;
+      const sRaw=(row[iS]||'').trim();const s=SENT_MAP[sRaw]||SENT_MAP[sRaw.toLowerCase()];
+      if(!s){bad.push(k+2);return;}
+      out.push({번호:iN>=0&&row[iN]?row[iN].trim():String(out.length+1),페르소나:iP>=0?(row[iP]||'').trim():'',리뷰:txt,주제:(row[iT]||'').trim()||'미분류',감정:s});});
+    if(!out.length)throw new Error('읽을 수 있는 리뷰가 없어요.');
+    return {out,bad};
+  }
+  function readText(file){return file.arrayBuffer().then(buf=>{let t=new TextDecoder('utf-8').decode(buf);
+    if(t.includes('�')){try{t=new TextDecoder('euc-kr').decode(buf);}catch(e){}}return t;});}
+  function setMarks(on){
+    document.querySelectorAll('.vx [data-source],.vx [data-src-bak]').forEach(el=>{
+      if(on&&el.dataset.srcBak!==undefined){el.setAttribute('data-source',el.dataset.srcBak);delete el.dataset.srcBak;}
+      else if(!on&&el.hasAttribute('data-source')){el.dataset.srcBak=el.getAttribute('data-source');el.removeAttribute('data-source');}});
+  }
+  const fileIn=document.getElementById('file-up');
+  document.getElementById('btn-up').addEventListener('click',()=>{fileIn.value='';fileIn.click();});
+  fileIn.addEventListener('change',async()=>{const f=fileIn.files&&fileIn.files[0];if(!f)return;
+    try{say('읽는 중…');const {out,bad}=toReviews(parseCSV(await readText(f)));
+      UP={name:f.name,reviews:out,a:window.vxAnalyze(out)};setMarks(false);
+      document.getElementById('subtitle').textContent='업로드한 파일: '+f.name+' · 리뷰 '+out.length+'건';
+      const b=document.getElementById('banner');b.className='vx-banner on';
+      b.textContent='지금은 업로드한 '+f.name+'로 다시 계산한 화면입니다. 이 화면에서만 보이고 저장되지 않으며, 새로고침하거나 \'원래 데이터로\'를 누르면 기본 30건으로 돌아갑니다.'+(bad.length?' 감정 값을 알 수 없어 뺀 행: '+bad.slice(0,10).join(', ')+(bad.length>10?' 외 '+(bad.length-10)+'개':'')+'.':'');
+      document.getElementById('btn-reset').hidden=false;q.value='';drawAll();say(out.length+'건 반영됨','ok');
+    }catch(e){say(e.message||'파일을 읽지 못했어요.','bad');}});
+  document.getElementById('btn-reset').addEventListener('click',()=>{UP=null;setMarks(true);
+    document.getElementById('subtitle').textContent='리뷰 30건(10개 페르소나 × 3건) · 실습용 가상 데이터';
+    document.getElementById('banner').className='vx-banner';document.getElementById('btn-reset').hidden=true;q.value='';drawAll();say('원래 데이터로 돌아왔어요');});
+
+  /* ---------- 다운로드 ---------- */
+  let dlP=null;const dlNs=()=>{if(!dlP)dlP=(window.claude&&window.claude.use)?window.claude.use('downloads').catch(()=>null):Promise.resolve(null);return dlP;};
+  dlNs();
+  async function save(filename,data){const dl=await dlNs();
+    if(!dl){say('이 화면에서는 파일 저장을 쓸 수 없어요. claude.ai에서 대시보드를 열어 주세요.','bad');return;}
+    try{await dl.save({filename,data});say('저장했어요','ok');}
+    catch(e){const c=e&&e.code;say(c==='declined'?'저장을 취소했어요':c==='rate_limited'?'저장 창이 이미 열려 있어요':'저장하지 못했어요 ('+(c||'오류')+')',c==='declined'?'':'bad');}}
+  document.getElementById('btn-tpl').addEventListener('click',()=>save('VOC_업로드_양식.csv','﻿번호,고객유형,리뷰,주제,감정\n1,30대 직장인,"충전소가 부족해서 대기가 길어요.",충전,부정\n2,40대 가장,실내가 넓어서 가족 여행에 좋아요.,디자인,긍정\n'));
+
+  const esc=s=>String(s??'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  function svgOut(id){const src=document.querySelector('#'+id+' svg');if(!src)return '';
+    const cl=src.cloneNode(true);const a=[src,...src.querySelectorAll('*')],b=[cl,...cl.querySelectorAll('*')];
+    a.forEach((el,i)=>{const cs=getComputedStyle(el),o=b[i];
+      ['fill','stroke','opacity','font-size','font-weight'].forEach(p=>{const v=cs.getPropertyValue(p);if(v)o.style.setProperty(p,v);});
+      o.style.removeProperty('cursor');o.style.setProperty('font-family','Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif');});
+    const bb=src.getBoundingClientRect();cl.setAttribute('width',Math.round(bb.width));cl.setAttribute('height',Math.round(bb.height));cl.removeAttribute('style');
+    cl.setAttribute('xmlns','http://www.w3.org/2000/svg');return new XMLSerializer().serializeToString(cl);}
+  function tbl(cols,rows,numCols){return '<table><thead><tr>'+cols.map(c=>'<th'+(numCols.includes(c)?' class="n"':'')+'>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+
+    rows.map(r=>'<tr>'+cols.map(c=>'<td'+(numCols.includes(c)?' class="n"':'')+'>'+esc(r[c])+'</td>').join('')+'</tr>').join('')+'</tbody></table>';}
+  function buildReport(){
+    const tot=get('totals').data[0],ch=get('charge').data[0],topics=get('topics').data.slice().sort((a,b)=>b.부정-a.부정||b.합계-a.합계),
+      kw=get('keywords').data,cloud=get('cloud').data.slice().sort((a,b)=>b.언급-a.언급),rv=get('reviews').data;
+    const worst=ch.최다주제??ch.주제,wn=ch.주제부정??ch.충전부정;
+    const pos=kw.filter(k=>k.감정==='긍정'),neg=kw.filter(k=>k.감정==='부정');
+    const net=topics.map(t=>({...t,순:t.긍정-t.부정})).sort((a,b)=>b.순-a.순);
+    const now=new Date();const stamp=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+    const src=UP?'업로드 파일 '+UP.name:'Day2_아이오닉5_VOC리뷰30건_가상.csv (실습용 가상 데이터)';
+    const ins=[
+      '부정 리뷰 '+ch.부정합계+'건 중 '+wn+'건('+pct(ch.비중)+')이 <b>'+esc(worst)+'</b> 주제에 몰려 있어, 이 영역의 경험 개선이 1순위 과제입니다.',
+      neg[0]?'부정 키워드 1위는 <b>'+esc(neg[0].키워드)+'</b>('+neg[0].빈도+'건, '+esc(neg[0]['근거 리뷰 번호'])+')입니다.':'',
+      pos[0]?'긍정 키워드 1위는 <b>'+esc(pos[0].키워드)+'</b>('+pos[0].빈도+'건)로, 마케팅 메시지의 강점으로 활용할 수 있습니다.':'',
+      net.length?'주제별 순감정(긍정−부정)은 <b>'+esc(net[0].주제)+'</b>가 가장 높고('+(net[0].순>0?'+':'')+net[0].순+'), <b>'+esc(net[net.length-1].주제)+'</b>가 가장 낮습니다('+net[net.length-1].순+').':''].filter(Boolean);
+    return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>아이오닉5 VOC 감정분석 결과보고서</title><style>'+
+      'body{font-family:Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1f1e1d;background:#fff;max-width:880px;margin:0 auto;padding:40px 24px;line-height:1.6}'+
+      'h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:36px 0 10px;padding-bottom:6px;border-bottom:2px solid #1f1e1d}.meta{color:#6b6a68;font-size:13px}'+
+      '.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px}.kpi{border:1px solid #ddd;border-radius:8px;padding:12px}.kpi .l{font-size:12px;color:#6b6a68}.kpi .v{font-size:26px;font-weight:600}.kpi .s{font-size:12px;color:#6b6a68}'+
+      'table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}th,td{border-bottom:1px solid #e5e5e5;padding:6px 8px;text-align:left;vertical-align:top}th{background:#f6f5f3;font-weight:600}.n{text-align:right}'+
+      'ol{padding-left:20px}li{margin:4px 0}.fig{margin:10px 0;overflow-x:auto}.fig svg{max-width:100%;height:auto}.note{font-size:12px;color:#6b6a68}'+
+      '@media print{body{padding:0}h2{break-after:avoid}.fig,table{break-inside:avoid}}@media(max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)}}'+
+      '</style></head><body>'+
+      '<h1>아이오닉5 VOC 긍·부정 키워드와 감정분석</h1><div class="meta">작성일 '+stamp+' · 데이터: '+esc(src)+' · 리뷰 '+tot.합계+'건</div>'+
+      '<div class="kpis">'+[['전체 리뷰',tot.합계,''],['긍정',tot.긍정,pct(tot.긍정비율)],['중립',tot.중립,pct(tot.중립비율)],['부정',tot.부정,pct(tot.부정비율)]]
+        .map(([l,v,s])=>'<div class="kpi"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="s">'+(s?s+' 비중':'건')+'</div></div>').join('')+'</div>'+
+      '<h2>1. 핵심 요약</h2><ol>'+ins.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+      '<h2>2. 주제별 감정 구성</h2><div class="fig">'+svgOut('chart-stack')+'</div>'+tbl(['주제','긍정','중립','부정','합계'],topics,['긍정','중립','부정','합계'])+
+      '<h2>3. 긍·부정 키워드 Top 5</h2><div class="fig">'+svgOut('chart-kw')+'</div>'+tbl(['감정','순위','키워드','빈도','근거 리뷰 번호'],kw,['순위','빈도'])+
+      '<p class="note">빈도 = 해당 키워드를 언급한 리뷰 수. 한 리뷰가 여러 키워드에 포함될 수 있습니다.</p>'+
+      '<h2>4. 워드클라우드</h2><div class="fig">'+svgOut('chart-cloud')+'</div>'+
+      tbl(['단어','언급','긍정','중립','부정'],cloud.slice(0,15),['언급','긍정','중립','부정'])+'<p class="note">상위 15개 단어. 크기 = 언급 리뷰 수, 색 = 우세 감정.</p>'+
+      '<h2>5. 부록: 리뷰 원문</h2>'+tbl(['번호','페르소나','리뷰','주제','감정'],rv.map(r=>({번호:r['번호'],페르소나:r['페르소나']??r['고객유형(페르소나)']??'',리뷰:r['리뷰'],주제:r['주제'],감정:r['감정']})),['번호'])+
+      '<p class="note">분석 방법: 주제·감정 라벨은 입력 데이터 기준. 키워드·워드클라우드는 정해 둔 단어 규칙으로 리뷰 원문을 검색해 집계.</p>'+
+      '</body></html>';
+  }
+  document.getElementById('btn-report').addEventListener('click',()=>{
+    const need=['totals','charge','topics','keywords','cloud','reviews'];if(need.some(id=>get(id).status!=='ok')){say('데이터를 불러오는 중이에요. 잠시 후 다시 눌러 주세요.');return;}
+    let html;try{html=buildReport();}catch(e){say('보고서를 만들지 못했어요.','bad');return;}
+    const d=new Date();save('아이오닉5_VOC_결과보고서_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.html',html);});
+})();
+</script>

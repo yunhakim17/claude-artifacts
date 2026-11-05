@@ -1,0 +1,320 @@
+<style>
+.sd-wrap{max-width:72rem;margin-inline:auto;display:flex;flex-direction:column;gap:var(--cds-gap-xl);font-family:var(--font-anthropic-sans)}
+.sd-head h1{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);margin:0;text-wrap:balance}
+.sd-take{color:var(--color-fg-muted);font-size:var(--cds-font-size-body);margin:var(--cds-gap-sm) 0 0;max-width:68ch;line-height:1.6}
+.sd-asof{color:var(--color-fg-muted);font-size:var(--cds-font-size-caption);margin-top:var(--cds-gap-xs)}
+.sd-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr));gap:var(--cds-gap-md)}
+.sd-card{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-lg);min-width:0;display:flex;flex-direction:column;gap:var(--cds-gap-sm)}
+.sd-kpi-top{display:flex;justify-content:space-between;align-items:center;gap:var(--cds-gap-sm)}
+.sd-kpi-label{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.sd-kpi-num{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);font-variant-numeric:tabular-nums;line-height:1.15}
+.sd-unit{font-family:var(--font-anthropic-sans);font-size:var(--cds-font-size-body);color:var(--color-fg-muted);margin-left:.15em}
+.sd-kpi-sub{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);font-variant-numeric:tabular-nums}
+.sd-pill{font-size:var(--cds-font-size-caption);border:1px solid var(--color-border-line);border-radius:999px;padding:0 .55em;color:var(--color-fg-muted);white-space:nowrap}
+.sd-pill.is-plan{border-style:dashed}
+.sd-up{color:var(--color-ok)} .sd-down{color:var(--color-bad)}
+.sd-sec{display:flex;flex-direction:column;gap:var(--cds-gap-md)}
+.sd-sec h2{font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium);margin:0}
+.sd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:var(--cds-gap-md)}
+.sd-card h3{font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium);margin:0}
+.sd-note{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);margin:0}
+.sd-bars{display:flex;flex-direction:column;gap:var(--cds-gap-sm);min-height:12rem}
+.sd-bar-row{display:grid;grid-template-columns:minmax(0,10rem) minmax(0,1fr) 4rem;align-items:center;gap:var(--cds-gap-sm)}
+.sd-bar-label{font-size:var(--cds-font-size-caption);line-height:1.3}
+.sd-bar-label small{display:block;color:var(--color-fg-muted)}
+.sd-track{position:relative;height:1.1rem}
+.sd-zero{position:absolute;top:-.2rem;bottom:-.2rem;width:1px;background:var(--cds-chart-axis)}
+.sd-bar{position:absolute;top:0;bottom:0;border-radius:4px}
+.sd-bar.is-plan{background:transparent!important;border:1.5px dashed var(--cds-chart-muted)}
+.sd-bar-val{font-size:var(--cds-font-size-caption);font-variant-numeric:tabular-nums;text-align:right}
+.sd-legend{display:flex;flex-wrap:wrap;gap:var(--cds-gap-md);font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.sd-legend i{display:inline-block;width:.9rem;height:.6rem;border-radius:2px;margin-right:.35rem;vertical-align:middle}
+.sd-legend i.plan{border:1.5px dashed var(--cds-chart-muted)}
+.sd-tablebox{overflow-x:auto}
+.sd-table{width:100%;border-collapse:collapse;font-size:var(--cds-font-size-caption);font-variant-numeric:tabular-nums}
+.sd-table th{text-align:left;font-weight:var(--cds-font-weight-medium);color:var(--color-fg-muted);border-bottom:1px solid var(--color-border-line);padding:var(--cds-pad-xs) var(--cds-pad-sm)}
+.sd-table td{border-bottom:1px solid var(--color-border-line);padding:var(--cds-pad-sm);vertical-align:top}
+.sd-table td.num,.sd-table th.num{text-align:right;white-space:nowrap}
+.sd-mini{display:flex;align-items:center;gap:var(--cds-gap-sm);justify-content:flex-end}
+.sd-mini-track{position:relative;width:5rem;height:.6rem}
+.sd-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;min-height:16rem}
+.sd-tl li{display:grid;grid-template-columns:5.5rem 1.25rem minmax(0,1fr);gap:var(--cds-gap-sm);align-items:start;position:relative;padding-bottom:var(--cds-gap-md)}
+.sd-tl li::before{content:"";position:absolute;left:calc(5.5rem + var(--cds-gap-sm) + .6rem);top:.9rem;bottom:0;width:1px;background:var(--cds-chart-grid)}
+.sd-tl li:last-child::before{display:none}
+.sd-when{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);font-variant-numeric:tabular-nums;padding-top:.1rem;text-align:right}
+.sd-dot{width:.75rem;height:.75rem;border-radius:50%;margin:.25rem auto 0;box-sizing:border-box}
+.sd-ev{display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem .5rem;font-size:var(--cds-font-size-body);line-height:1.45}
+.sd-co{font-size:var(--cds-font-size-caption);font-weight:var(--cds-font-weight-medium)}
+.sd-tl li.sd-now .sd-when{color:var(--color-fg);font-weight:var(--cds-font-weight-medium)}
+.sd-tl li.sd-now .sd-ev{color:var(--color-fg-muted);font-size:var(--cds-font-size-caption)}
+.sd-nowline{height:0;border-top:1px dashed var(--cds-chart-reference);margin-top:.6rem}
+.sd-fail{display:flex;align-items:center;justify-content:center;gap:.5rem;color:var(--color-fg-muted);font-size:var(--cds-font-size-caption);min-height:inherit;flex:1}
+.sd-fail::before{content:"";width:.375rem;height:.375rem;border-radius:50%;background:var(--color-bad)}
+.sd-src{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);display:flex;flex-direction:column;gap:var(--cds-gap-xs)}
+.sd-src ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.15rem}
+.sd-src a{color:inherit}
+[data-dash-source-state=refreshing]{opacity:.5;transition:opacity var(--cds-dur-slow)}
+@media (max-width:540px){
+  .sd-bar-row{grid-template-columns:minmax(0,1fr) 4rem}
+  .sd-bar-label{grid-column:1 / -1}
+  .sd-tl li{grid-template-columns:4.25rem 1rem minmax(0,1fr)}
+  .sd-tl li::before{left:calc(4.25rem + var(--cds-gap-sm) + .45rem)}
+}
+@media (prefers-reduced-motion:no-preference){
+  .sd-bar.grow{animation:sd-grow var(--cds-dur-slow) var(--cds-ease-out)}
+  @keyframes sd-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+}
+</style>
+
+<div class="sd-wrap">
+  <header class="sd-head" id="top">
+    <h1>SDV 전환 대시보드</h1>
+    <p class="sd-take" id="takeaway">9월 세계 EV 판매는 전년 동월 대비 <span data-source="ev_growth" data-field="change_pct" data-where="id=world_sep" data-fmt="num" class="dash-skeleton">—</span>%로 줄었지만, 유럽(<span class="sd-sign" data-for="eu"></span><span data-source="ev_growth" data-field="change_pct" data-where="id=eu_sep" data-fmt="num" data-sign="eu" class="dash-skeleton">—</span>%)과 중국·유럽·북미 밖 시장(<span class="sd-sign" data-for="row"></span><span data-source="ev_growth" data-field="change_pct" data-where="id=row_sep" data-fmt="num" data-sign="row" class="dash-skeleton">—</span>%)이 성장을 이끌었습니다. 부품사는 제품별 SDV 연결 지점 정의와 지역별 전동화 투자 재조정이 우선입니다.</p>
+    <div class="sd-asof">부품사 전략팀 관점 · 2026년 10월 17일 기준 공개 자료</div>
+  </header>
+
+  <section class="sd-kpis" id="kpis" aria-label="핵심 지표">
+    <div class="sd-card" id="kpi-ev">
+      <div class="sd-kpi-top"><span class="sd-kpi-label">2026년 세계 EV 판매</span><span class="sd-pill is-plan">IEA 전망</span></div>
+      <div class="sd-kpi-num"><span data-source="ev_growth" data-field="volume_man" data-where="id=world_2026f" data-fmt="int" class="dash-skeleton">—</span><span class="sd-unit">만 대</span></div>
+      <div class="sd-kpi-sub"><span class="sd-up"><span class="sd-sign" data-for="w26"></span><span data-source="ev_growth" data-field="change_pct" data-where="id=world_2026f" data-fmt="num" data-sign="w26" class="dash-skeleton">—</span>%</span> 전년 대비, 확정 실적 아님</div>
+    </div>
+    <div class="sd-card" id="kpi-eu">
+      <div class="sd-kpi-top"><span class="sd-kpi-label">유럽 EV 판매 증가율</span><span class="sd-pill">9월 실적</span></div>
+      <div class="sd-kpi-num"><span class="sd-sign" data-for="eu2"></span><span data-source="ev_growth" data-field="change_pct" data-where="id=eu_sep" data-fmt="num" data-sign="eu2" class="dash-skeleton">—</span><span class="sd-unit">%</span></div>
+      <div class="sd-kpi-sub">전년 동월 대비 · 약 <span data-source="ev_growth" data-field="volume_man" data-where="id=eu_sep" data-fmt="int" class="dash-skeleton">—</span>만 대, 월간 최고</div>
+    </div>
+    <div class="sd-card" id="kpi-byd">
+      <div class="sd-kpi-top"><span class="sd-kpi-label">BYD 해외 출하 증가율</span><span class="sd-pill">9월 실적</span></div>
+      <div class="sd-kpi-num"><span class="sd-sign" data-for="byd"></span><span data-source="byd_sales" data-field="yoy_pct" data-where="id=sep_overseas" data-fmt="num" data-sign="byd" class="dash-skeleton">—</span><span class="sd-unit">%</span></div>
+      <div class="sd-kpi-sub">전년 동월 대비 · <span data-source="byd_sales" data-field="units" data-where="id=sep_overseas" data-fmt="int" class="dash-skeleton">—</span>대(승용·픽업)</div>
+    </div>
+    <div class="sd-card" id="kpi-pleos">
+      <div class="sd-kpi-top"><span class="sd-kpi-label">Pleos Connect 적용 목표</span><span class="sd-pill is-plan">2030 목표</span></div>
+      <div class="sd-kpi-num"><span data-source="sdv_roadmap" data-field="target_man" data-where="id=hmg_2030" data-fmt="int" class="dash-skeleton">—</span><span class="sd-unit">만 대</span></div>
+      <div class="sd-kpi-sub">현대차·기아·제네시스 누적, 현재 적용 대수 아님</div>
+    </div>
+  </section>
+
+  <section class="sd-sec" id="market">
+    <h2>시장 흐름: 성장 종료가 아니라 지역별 격차</h2>
+    <div class="sd-grid">
+      <div class="sd-card" id="ev-growth-card">
+        <h3>지역별 EV 판매 증감률</h3>
+        <p class="sd-note">전년 대비 %. 기간이 서로 달라 행마다 기준을 함께 적었습니다.</p>
+        <div class="sd-bars" id="ev-chart" data-source="ev_growth"></div>
+        <div class="sd-legend"><span><i id="lg-up"></i>증가(실적)</span><span><i id="lg-down"></i>감소(실적)</span><span><i class="plan"></i>IEA 전망</span></div>
+      </div>
+      <div class="sd-card" id="byd-card">
+        <h3>BYD: 해외 확장이 중국 내 부진을 보완</h3>
+        <p class="sd-note">신에너지차(NEV) 기준으로 순수전기차(BEV) 판매와 다릅니다. Reuters 2026.10.1 보도.</p>
+        <div class="sd-tablebox">
+          <table class="sd-table" id="byd-table" data-source="byd_sales" data-row-key="id">
+            <thead><tr><th data-field="item">구분</th><th class="num" data-field="units">대수</th><th class="num" data-field="yoy_pct">전년 대비</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="sd-note">월간 판매는 늘었지만 1~9월 누적은 줄어, 해외 출하가 성장을 떠받치는 구조입니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sd-sec" id="sdv">
+    <h2>SDV 로드맵: 발표된 일정과 목표</h2>
+    <div class="sd-card" id="roadmap-card">
+      <p class="sd-note">채운 점은 이미 발표된 일, 빈 점은 앞으로의 일정·계획·목표입니다. 계획과 목표는 달성 실적이 아닙니다.</p>
+      <ol class="sd-tl" id="roadmap" data-source="sdv_roadmap"></ol>
+    </div>
+  </section>
+
+  <section class="sd-sec" id="actions">
+    <h2>부품사 대응 제언</h2>
+    <div class="sd-card" id="recs-card">
+      <p class="sd-note">수집 자료에서 도출한 분석이며, 확정된 고객 요구나 정량 전망이 아닙니다.</p>
+      <div class="sd-tablebox">
+        <table class="sd-table" id="recs-table" data-source="recommendations" data-row-key="rec">
+          <thead><tr><th data-field="rec">제언</th><th data-field="task">우선 실행 과제</th><th data-field="basis">근거</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer class="sd-src" id="sources">
+    <div>근거 자료</div>
+    <ul>
+      <li><a href="https://www.hyundai.com/worldwide/en/company/innovation/future-mobility" target="_blank" rel="noopener">현대차그룹, Future Mobility(Pleos·Data Union)</a></li>
+      <li><a href="https://www.iea.org/reports/global-ev-outlook-2026/executive-summary" target="_blank" rel="noopener">IEA, Global EV Outlook 2026</a></li>
+      <li><a href="https://www.reuters.com/business/autos-transportation/chinas-byd-sales-rise-september-export-boom-sustains-momentum-2026-10-01/" target="_blank" rel="noopener">Reuters, BYD 9월 판매(2026.10.1)</a></li>
+      <li><a href="https://www.volkswagen-group.com/en/press-releases/auto-china-2026-volkswagen-group-unveils-record-product-offensive-and-agentic-ai-roadmap-for-china-20333" target="_blank" rel="noopener">폭스바겐그룹, 중국 전동화·AI 로드맵(2026.4.21)</a></li>
+      <li><a href="https://group.mercedes-benz.com/technology/digitalisation/operating-system/" target="_blank" rel="noopener">메르세데스벤츠, MB.OS</a></li>
+    </ul>
+  </footer>
+</div>
+
+<script>
+(function () {
+  const root = document.querySelector('.sd-wrap');
+  const fmtInt = d3.format(',');
+  const fmtNum = (v) => (Number.isInteger(v) ? String(v) : d3.format('.1f')(v));
+  const UP = () => dash.colors[0];
+  const DOWN = 'var(--cds-chart-status-critical)';
+  document.getElementById('lg-up').style.background = UP();
+  document.getElementById('lg-down').style.background = DOWN;
+  let animated = false;
+
+  const parseWhere = (w) => Object.fromEntries(w.split('&').map((p) => p.split('=').map(decodeURIComponent)));
+  const findRow = (rows, w) => {
+    const q = parseWhere(w);
+    return rows.find((r) => Object.entries(q).every(([k, v]) => String(r[k]) === v));
+  };
+  const failLine = (el) => {
+    const d = document.createElement('div');
+    d.className = 'sd-fail';
+    d.textContent = 'Failed to load';
+    el.replaceChildren(d);
+  };
+
+  function fillMarks() {
+    root.querySelectorAll('span[data-source][data-field][data-where]').forEach((el) => {
+      const ds = dash.data(el.dataset.source);
+      if (ds.status !== 'ok') { el.textContent = '—'; if (ds.status !== 'loading') el.classList.remove('dash-skeleton'); return; }
+      el.classList.remove('dash-skeleton');
+      const row = findRow(ds.data, el.dataset.where);
+      const v = row ? Number(row[el.dataset.field]) : NaN;
+      if (!row || !Number.isFinite(v)) { el.textContent = '—'; return; }
+      el.textContent = el.dataset.fmt === 'int' ? fmtInt(v) : fmtNum(v);
+      if (el.dataset.sign) {
+        const s = root.querySelector(`.sd-sign[data-for="${el.dataset.sign}"]`);
+        if (s) s.textContent = v > 0 ? '+' : '';
+      }
+    });
+  }
+
+  function divergingBar(track, v, x, color, plan) {
+    const zero = document.createElement('div');
+    zero.className = 'sd-zero';
+    zero.style.left = x(0) + '%';
+    const bar = document.createElement('div');
+    bar.className = 'sd-bar' + (plan ? ' is-plan' : '') + (animated ? '' : ' grow');
+    const a = x(Math.min(0, v)), b = x(Math.max(0, v));
+    bar.style.left = a + '%';
+    bar.style.width = Math.max(b - a, 0.6) + '%';
+    bar.style.background = color;
+    bar.style.transformOrigin = v >= 0 ? 'left' : 'right';
+    track.replaceChildren(bar, zero);
+  }
+
+  function drawEv() {
+    const el = document.getElementById('ev-chart');
+    const ds = dash.data('ev_growth');
+    if (ds.status === 'error') return failLine(el);
+    if (ds.status !== 'ok') { el.replaceChildren(); return; }
+    const rows = ds.data.map((r) => ({ ...r, change_pct: Number(r.change_pct) })).sort((a, b) => b.change_pct - a.change_pct);
+    const lo = Math.min(0, d3.min(rows, (r) => r.change_pct)), hi = Math.max(0, d3.max(rows, (r) => r.change_pct));
+    const x = d3.scaleLinear([lo, hi], [0, 100]);
+    el.replaceChildren(...rows.map((r) => {
+      const row = document.createElement('div'); row.className = 'sd-bar-row';
+      const lab = document.createElement('div'); lab.className = 'sd-bar-label';
+      lab.textContent = r.region;
+      const sm = document.createElement('small'); sm.textContent = `${r.basis} · ${r.source}`; lab.append(sm);
+      const track = document.createElement('div'); track.className = 'sd-track';
+      const plan = r.kind === '전망';
+      divergingBar(track, r.change_pct, x, r.change_pct >= 0 ? UP() : DOWN, plan);
+      const val = document.createElement('div'); val.className = 'sd-bar-val';
+      val.textContent = (r.change_pct > 0 ? '+' : '') + fmtNum(r.change_pct) + '%';
+      val.classList.add(plan ? 'sd-plan' : r.change_pct >= 0 ? 'sd-up' : 'sd-down');
+      row.append(lab, track, val);
+      return row;
+    }));
+  }
+
+  function drawByd() {
+    const tb = document.querySelector('#byd-table tbody');
+    const ds = dash.data('byd_sales');
+    if (ds.status !== 'ok') { tb.replaceChildren(); if (ds.status === 'error') { const tr = tb.insertRow(); const td = tr.insertCell(); td.colSpan = 3; failLine(td); } return; }
+    const rows = ds.data.map((r) => ({ ...r, yoy_pct: Number(r.yoy_pct), units: Number(r.units) }));
+    const lo = Math.min(0, d3.min(rows, (r) => r.yoy_pct)), hi = Math.max(0, d3.max(rows, (r) => r.yoy_pct));
+    const x = d3.scaleLinear([lo, hi], [0, 100]);
+    tb.replaceChildren(...rows.map((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = r.id;
+      const c1 = document.createElement('td'); c1.textContent = r.item;
+      const c2 = document.createElement('td'); c2.className = 'num'; c2.textContent = fmtInt(r.units);
+      const c3 = document.createElement('td'); c3.className = 'num';
+      const wrap = document.createElement('div'); wrap.className = 'sd-mini';
+      const track = document.createElement('div'); track.className = 'sd-mini-track';
+      divergingBar(track, r.yoy_pct, x, r.yoy_pct >= 0 ? UP() : DOWN, false);
+      const t = document.createElement('span'); t.className = r.yoy_pct >= 0 ? 'sd-up' : 'sd-down';
+      t.textContent = (r.yoy_pct > 0 ? '+' : '') + fmtNum(r.yoy_pct) + '%';
+      wrap.append(track, t); c3.append(wrap);
+      tr.append(c1, c2, c3);
+      return tr;
+    }));
+  }
+
+  function drawRoadmap() {
+    const ol = document.getElementById('roadmap');
+    const ds = dash.data('sdv_roadmap');
+    if (ds.status === 'error') return failLine(ol);
+    if (ds.status !== 'ok') { ol.replaceChildren(); return; }
+    const colorOf = (co) => (co === '현대차그룹' ? dash.colors[0] : dash.colors[1]);
+    const now = new Date();
+    const nowOrder = now.getFullYear() + now.getMonth() / 12;
+    const rows = ds.data.map((r) => ({ ...r, order: Number(r.order) })).sort((a, b) => a.order - b.order);
+    const items = [];
+    let nowPlaced = false;
+    const nowItem = () => {
+      const li = document.createElement('li'); li.className = 'sd-now';
+      const w = document.createElement('div'); w.className = 'sd-when'; w.textContent = '오늘';
+      const g = document.createElement('div');
+      const ev = document.createElement('div'); ev.className = 'sd-ev';
+      const line = document.createElement('div'); line.className = 'sd-nowline'; line.style.flex = '1';
+      ev.append(line);
+      li.append(w, g, ev);
+      return li;
+    };
+    rows.forEach((r) => {
+      if (!nowPlaced && r.order > nowOrder) { items.push(nowItem()); nowPlaced = true; }
+      const li = document.createElement('li');
+      const w = document.createElement('div'); w.className = 'sd-when'; w.textContent = r.when;
+      const dot = document.createElement('div'); dot.className = 'sd-dot';
+      const c = colorOf(r.company);
+      if (r.status === '발표') dot.style.background = c;
+      else { dot.style.border = `2px solid ${c}`; dot.style.background = 'var(--color-panel)'; }
+      const ev = document.createElement('div'); ev.className = 'sd-ev';
+      const co = document.createElement('span'); co.className = 'sd-co'; co.style.color = c; co.textContent = r.company;
+      const tx = document.createElement('span'); tx.textContent = r.event;
+      const pill = document.createElement('span'); pill.className = 'sd-pill' + (r.status === '발표' ? '' : ' is-plan'); pill.textContent = r.status;
+      ev.append(co, tx, pill);
+      li.append(w, dot, ev);
+      items.push(li);
+    });
+    if (!nowPlaced) items.push(nowItem());
+    ol.replaceChildren(...items);
+  }
+
+  function drawRecs() {
+    const tb = document.querySelector('#recs-table tbody');
+    const ds = dash.data('recommendations');
+    if (ds.status !== 'ok') { tb.replaceChildren(); if (ds.status === 'error') { const tr = tb.insertRow(); const td = tr.insertCell(); td.colSpan = 3; failLine(td); } return; }
+    tb.replaceChildren(...ds.data.map((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = r.rec;
+      ['rec', 'task', 'basis'].forEach((k, i) => {
+        const td = document.createElement('td'); td.textContent = r[k];
+        if (i === 0) td.style.fontWeight = 'var(--cds-font-weight-medium)';
+        tr.append(td);
+      });
+      return tr;
+    }));
+  }
+
+  dash.onData(() => {
+    fillMarks();
+    drawEv();
+    drawByd();
+    drawRoadmap();
+    drawRecs();
+    if (dash.data('ev_growth').status === 'ok' && dash.data('byd_sales').status === 'ok') animated = true;
+  });
+})();
+</script>

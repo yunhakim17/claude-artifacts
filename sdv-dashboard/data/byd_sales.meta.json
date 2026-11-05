@@ -1,0 +1,14 @@
+{
+  "description": "Reuters 2026.10.1 보도의 BYD 판매·해외 출하(신에너지차 기준). 1~9월 누적은 보도의 '약 313만 대'입니다.",
+  "fixed": true,
+  "source": {
+    "kind": "file",
+    "name": "byd_sales.json",
+    "url": "/_blob/0b7dc165a28a920d7737c8c1c7c2a3a6"
+  },
+  "title": "BYD 9월 판매 실적",
+  "updated": {
+    "at": "2026-10-18T01:15:00Z",
+    "by": "Claude"
+  }
+}

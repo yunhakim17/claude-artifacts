@@ -1,0 +1,14 @@
+{
+  "description": "리뷰 30건에서 긍정·부정 리뷰의 키워드를 묶어 언급 리뷰 수를 센 표. Claude가 원문을 읽고 분류함.",
+  "fixed": true,
+  "source": {
+    "kind": "file",
+    "name": "keywords.csv",
+    "url": "/_blob/80a81569c19679c4e7418e36199d7b92"
+  },
+  "title": "긍·부정 키워드 Top 5",
+  "updated": {
+    "at": "2026-10-18T15:42:00+09:00",
+    "by": "Claude"
+  }
+}

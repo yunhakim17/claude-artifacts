@@ -1,0 +1,14 @@
+{
+  "description": "현대차그룹·폭스바겐그룹 공식 발표에 나온 SDV 관련 일정과 목표. 상태는 발표(완료)·일정·계획·목표로 구분했고, 계획·목표는 달성 실적이 아닙니다.",
+  "fixed": true,
+  "source": {
+    "kind": "file",
+    "name": "sdv_roadmap.json",
+    "url": "/_blob/67c730e20d8ba6ab3c9b5c46455fdfe0"
+  },
+  "title": "SDV 로드맵 일정",
+  "updated": {
+    "at": "2026-10-18T01:15:00Z",
+    "by": "Claude"
+  }
+}

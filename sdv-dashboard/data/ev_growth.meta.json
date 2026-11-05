@@ -1,0 +1,14 @@
+{
+  "description": "2026년 지역별 전기차 판매 증감률(전년 대비 %)과 판매량(만 대). 9월·1~9월 실적은 Reuters·Electrek·Sustainability Online 보도, 연간 전망은 IEA 보고서에서 옮겨 적었습니다.",
+  "fixed": true,
+  "source": {
+    "kind": "file",
+    "name": "ev_growth.json",
+    "url": "/_blob/6a00becc1528cff86a9c4db646a5b7c1"
+  },
+  "title": "지역별 EV 판매 증감",
+  "updated": {
+    "at": "2026-10-18T01:15:00Z",
+    "by": "Claude"
+  }
+}

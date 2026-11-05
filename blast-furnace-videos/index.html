@@ -1,0 +1,155 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>용광로가 배우기 시작했다</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gothic+A1:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  /* Layout: one furnace-dark masthead band, then two video "screens" side by side (wide 16:9 + tall 9:16), stacking on phones. */
+  :root {
+    --bg: #f3f1ee;
+    --surface: #ffffff;
+    --ink: #17203a;
+    --muted: #5b6478;
+    --line: #dcd8d2;
+    --navy: #1b2a5e;
+    --ember: #e8590c;
+    --ember-ink: #b6430a;
+    --band: #120c08;
+    --band-ink: #f4e6d0;
+    --display: "Black Han Sans", "Gothic A1", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    --body: "Gothic A1", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Consolas", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1120; --surface: #161b30; --ink: #e9ecf5; --muted: #9aa3ba; --line: #2a3150;
+      --navy: #8fa6ff; --ember: #ff7a2a; --ember-ink: #ff9a55; --band: #0a0705; --band-ink: #f4e6d0;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1120; --surface: #161b30; --ink: #e9ecf5; --muted: #9aa3ba; --line: #2a3150;
+    --navy: #8fa6ff; --ember: #ff7a2a; --ember-ink: #ff9a55; --band: #0a0705; --band-ink: #f4e6d0;
+    color-scheme: dark;
+  }
+
+  body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.7; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+  .band { background: var(--band); color: var(--band-ink); position: relative; overflow: hidden; }
+  .band::after { content: ""; position: absolute; inset: auto -10% -60% 30%; height: 120%;
+    background: radial-gradient(closest-side, rgba(232,89,12,.45), rgba(232,89,12,0)); pointer-events: none; }
+  .band .wrap { padding-block: 56px 48px; position: relative; z-index: 1; display: grid; gap: 14px; }
+  .eyebrow { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; color: #ffb27a; }
+  h1 { font-family: var(--display); font-weight: 400; font-size: clamp(36px, 6.4vw, 72px); line-height: 1.08; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  h1 .deg { color: #ff8a3d; }
+  .lede { margin: 0; max-width: 60ch; color: rgba(244,230,208,.82); font-size: 17px; }
+
+  main .wrap { padding-block: 40px 56px; display: grid; gap: 40px; }
+  .reels { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+  @media (max-width: 820px) { .reels { grid-template-columns: minmax(0, 1fr); } }
+
+  .reel { display: grid; gap: 14px; min-width: 0; }
+  .screen { background: #000; border-radius: 10px; overflow: hidden; box-shadow: 0 18px 40px -22px rgba(10,12,30,.6); }
+  .screen video { display: block; width: 100%; height: auto; max-width: 100%; }
+  .reel.tall .screen { max-width: 360px; justify-self: center; width: 100%; }
+  @media (max-width: 820px) { .reel.tall .screen { max-width: 340px; } }
+
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-family: var(--mono); font-size: 12px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .tag.hot { border-color: var(--ember); color: var(--ember-ink); }
+  h2 { font-family: var(--display); font-weight: 400; font-size: 26px; line-height: 1.25; margin: 0; text-wrap: balance; }
+  .reel p { margin: 0; color: var(--muted); max-width: 62ch; }
+
+  .flow { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14px; }
+  .flow li { display: grid; grid-template-columns: 4.6em minmax(0, 1fr); gap: 10px; align-items: baseline; }
+  .flow .t { font-family: var(--mono); font-size: 12px; color: var(--ember-ink); font-variant-numeric: tabular-nums; }
+
+  .notes { border-top: 1px solid var(--line); padding-top: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px 32px; }
+  .notes h3 { font-size: 14px; font-weight: 800; margin: 0 0 6px; letter-spacing: .02em; }
+  .notes p { margin: 0; font-size: 14px; color: var(--muted); }
+  footer { font-size: 13px; color: var(--muted); }
+  :focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+</style>
+
+<header class="band">
+  <div class="wrap">
+    <div class="eyebrow">DAY 5 · 케이스 스토리 · 자동차특화 AI 융합 전문가 과정</div>
+    <h1>100년 기술에 AI를,<br>용광로가 배우기 시작했다</h1>
+    <p class="lede">열어 볼 수 없는 <span class="deg">1,500℃</span>의 세계를 명장의 감에서 데이터의 눈으로. 같은 강의 덱 한 편을 두 가지 형식의 영상으로 만들었습니다.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="reels" aria-label="영상">
+      <article class="reel">
+        <div class="screen">
+          <video id="v-wide" controls playsinline preload="metadata" poster="media/lighthouse_poster.jpg">
+            <source src="media/lighthouse_16x9.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="meta">
+          <span class="tag hot">쇼릴</span><span class="tag">16:9</span><span class="tag">60초</span><span class="tag">나레이션 있음</span>
+        </div>
+        <h2>빛의 릴레이: 불빛에서 데이터, 등대까지</h2>
+        <p>showreel 스킬로 기획한 강의 오프닝 영상입니다. 쇳물의 불빛이 데이터의 빛으로, 다시 등대의 빛으로 바뀌며 이야기를 이어 갑니다.</p>
+        <ol class="flow">
+          <li><span class="t">0:00</span><span>1,500℃ 블랙박스, 들여다볼 수 없는 고로 내부</span></li>
+          <li><span class="t">0:08</span><span>명장의 감, 그리고 그 감의 정년</span></li>
+          <li><span class="t">0:18</span><span>센서와 AI가 감을 배우기 시작하다</span></li>
+          <li><span class="t">0:30</span><span>2019 WEF 등대공장, 국내 기업 최초</span></li>
+          <li><span class="t">0:40</span><span>"설비가 아니라 보는 법을 바꿨다"</span></li>
+          <li><span class="t">0:46</span><span>명장의 30년이 모두의 화면이 되다</span></li>
+        </ol>
+      </article>
+
+      <article class="reel tall">
+        <div class="screen">
+          <video id="v-tall" controls playsinline preload="metadata" poster="media/webtoon_poster.jpg">
+            <source src="media/webtoon_9x16.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="meta">
+          <span class="tag hot">웹툰 숏폼</span><span class="tag">9:16</span><span class="tag">45초</span><span class="tag">두 목소리</span>
+        </div>
+        <h2>현장 AI 일기: 노이즈 vs 추세</h2>
+        <p>ic-webtoon-short 스킬의 6컷 구조로 만든 세로 영상입니다. 부엉이 부장님과 펭귄 신입 펭이 대화하며 평상범위와 추세를 손으로 계산해 봅니다.</p>
+        <ol class="flow">
+          <li><span class="t">컷 1</span><span>타이틀</span></li>
+          <li><span class="t">컷 2</span><span>명장님 정년, 용광로 속은 누가 읽나</span></li>
+          <li><span class="t">컷 3</span><span>열어 볼 수 없으면 둘러싼 신호를 읽어</span></li>
+          <li><span class="t">컷 4</span><span>μ ± 2σ, 시간당 +4℃, 2시간 뒤 상한 (예시)</span></li>
+          <li><span class="t">컷 5</span><span>일상은 AI가, 예외 판단은 명장이</span></li>
+          <li><span class="t">컷 6</span><span>다음 시간: 열어 볼 수 없는 것</span></li>
+        </ol>
+      </article>
+    </section>
+
+    <section class="notes" aria-label="제작 정보">
+      <div>
+        <h3>만든 방법</h3>
+        <p>Remotion으로 화면을 그리고, edge-tts로 한국어 목소리를 입히고, ffmpeg로 음량을 -14 LUFS에 맞췄습니다. 배경음악과 효과음은 코드로 합성했습니다.</p>
+      </div>
+      <div>
+        <h3>내용 출처</h3>
+        <p>화면의 사실과 문장은 모두 DAY 5 강의 덱(용광로 등대공장 케이스)에서 가져왔습니다. 웹툰 컷 4의 온도 수치는 손계산을 위한 예시입니다.</p>
+      </div>
+      <div>
+        <h3>토론으로 이어 가기</h3>
+        <p>영상을 본 뒤 조별로 물어보세요. 우리 현장에서 직접 측정할 수 없는 상태는 무엇인가요?</p>
+      </div>
+    </section>
+
+    <footer>자동차특화 AI 융합 전문가 과정 · DAY 5 예지보전</footer>
+  </div>
+</main>
+
+<script>
+  // Only one video plays at a time.
+  const vids = [...document.querySelectorAll('video')];
+  vids.forEach(v => v.addEventListener('play', () => vids.forEach(o => { if (o !== v) o.pause(); })));
+</script>
+
+</body></html>

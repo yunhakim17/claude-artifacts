@@ -1,0 +1,62 @@
+[
+ {
+  "id": "row_sep",
+  "region": "중국·유럽·북미 외",
+  "basis": "2026년 9월",
+  "kind": "실적",
+  "change_pct": 81,
+  "volume_man": 31,
+  "source": "Sustainability Online",
+  "source_url": "https://sustainabilityonline.net/news/global-ev-sales-rose-17-month-on-month-in-september/"
+ },
+ {
+  "id": "eu_sep",
+  "region": "유럽",
+  "basis": "2026년 9월",
+  "kind": "실적",
+  "change_pct": 39,
+  "volume_man": 60,
+  "source": "UA.News(Electrek 인용)",
+  "source_url": "https://ua.news/en/avtosvit/prodazhi-elektromobiliv-u-evropi-u-veresni-zrosli-na-39-electrek"
+ },
+ {
+  "id": "eu_2026f",
+  "region": "유럽",
+  "basis": "2026년 연간 전망",
+  "kind": "전망",
+  "change_pct": 20,
+  "volume_man": null,
+  "source": "IEA Global EV Outlook 2026",
+  "source_url": "https://www.iea.org/reports/global-ev-outlook-2026/executive-summary"
+ },
+ {
+  "id": "world_2026f",
+  "region": "세계",
+  "basis": "2026년 연간 전망",
+  "kind": "전망",
+  "change_pct": 10,
+  "volume_man": 2300,
+  "source": "IEA",
+  "source_url": "https://www.iea.org/reports/electric-car-markets-in-a-time-of-uncertainty/executive-summary"
+ },
+ {
+  "id": "world_sep",
+  "region": "세계",
+  "basis": "2026년 9월",
+  "kind": "실적",
+  "change_pct": -2,
+  "volume_man": 215,
+  "source": "Reuters",
+  "source_url": "https://www.reuters.com/business/autos-transportation/global-ev-sales-fall-2-september-ending-six-month-growth-streak-2026-10-15/"
+ },
+ {
+  "id": "us_ytd",
+  "region": "미국",
+  "basis": "2026년 1~9월",
+  "kind": "실적",
+  "change_pct": -30.7,
+  "volume_man": null,
+  "source": "Reuters",
+  "source_url": "https://www.reuters.com/business/autos-transportation/why-ev-sales-are-lukewarm-america-hot-europe-2026-10-08/"
+ }
+]

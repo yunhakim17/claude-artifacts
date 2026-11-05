@@ -1,0 +1,873 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>한빛 CS 안내 챗봇</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: navy service band on top; chat console on the left, manual + evidence rail on the right (stacks under 880px) */
+:root {
+  --bg: #F3F5F9;
+  --surface: #FFFFFF;
+  --surface-2: #F7F8FB;
+  --ink: #18213B;
+  --muted: #5D6680;
+  --line: #DADFEA;
+  --brand-bg: #1C2B5A;
+  --on-brand: #FFFFFF;
+  --on-brand-muted: #B9C3E0;
+  --accent: #1C2B5A;
+  --on-accent: #FFFFFF;
+  --accent-soft: #E8ECF6;
+  --amber: #A86500;
+  --amber-band: #C47700;
+  --amber-soft: #FBF1E0;
+  --danger: #B42318;
+  --danger-soft: #FDECEC;
+  --ok: #1E7F4F;
+  --ok-soft: #E5F4EC;
+  --focus: #C47700;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.8125rem;
+  --fs-md: 0.9375rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.375rem;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1322; --surface: #161D31; --surface-2: #1B2339; --ink: #E6E9F2; --muted: #9AA3BC; --line: #2A3350;
+    --brand-bg: #121A30; --on-brand: #F1F3F9; --on-brand-muted: #8F9BC0;
+    --accent: #8EA3E0; --on-accent: #0E1322; --accent-soft: #232C48;
+    --amber: #E3A23B; --amber-band: #E3A23B; --amber-soft: #36290F;
+    --danger: #F38B80; --danger-soft: #3A1A18; --ok: #6FD3A0; --ok-soft: #12301F; --focus: #E3A23B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1322; --surface: #161D31; --surface-2: #1B2339; --ink: #E6E9F2; --muted: #9AA3BC; --line: #2A3350;
+  --brand-bg: #121A30; --on-brand: #F1F3F9; --on-brand-muted: #8F9BC0;
+  --accent: #8EA3E0; --on-accent: #0E1322; --accent-soft: #232C48;
+  --amber: #E3A23B; --amber-band: #E3A23B; --amber-soft: #36290F;
+  --danger: #F38B80; --danger-soft: #3A1A18; --ok: #6FD3A0; --ok-soft: #12301F; --focus: #E3A23B;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: var(--fs-md); line-height: 1.6; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--brand-bg); }
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.app { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); }
+
+/* top band */
+.top { background: var(--brand-bg); color: var(--on-brand); border-bottom: 4px solid var(--amber-band); }
+.top-in { padding-block: 14px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.brand { display: flex; flex-direction: column; gap: 2px; min-width: 0; margin-right: auto; }
+.brand-eyebrow { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 0.08em; color: var(--on-brand-muted); text-transform: uppercase; }
+.brand h1 { margin: 0; font-size: var(--fs-xl); font-weight: 700; line-height: 1.25; text-wrap: balance; }
+.brand h1 small { font-size: var(--fs-sm); font-weight: 500; color: var(--on-brand-muted); margin-left: 6px; }
+.top-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); padding: 4px 10px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--on-brand) 30%, transparent); color: var(--on-brand); }
+.status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--on-brand-muted); }
+.status[data-mode="claude"] .dot { background: #4ADE80; }
+.status[data-mode="search"] .dot { background: var(--amber-band); }
+.btn-ghost { background: transparent; border: 1px solid color-mix(in srgb, var(--on-brand) 35%, transparent); color: var(--on-brand); border-radius: 8px; padding: 6px 12px; font-size: var(--fs-sm); font-weight: 500; }
+.btn-ghost:hover { background: color-mix(in srgb, var(--on-brand) 12%, transparent); }
+
+/* body grid */
+.main { min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); min-width: 0; }
+
+/* chat */
+.chat { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.log { flex: 1; min-height: 0; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.msg { display: flex; flex-direction: column; gap: 6px; max-width: 46rem; min-width: 0; }
+.msg.user { align-self: flex-end; align-items: flex-end; }
+.msg .who { font-size: var(--fs-xs); color: var(--muted); font-family: var(--font-mono); }
+.bubble { padding: 10px 14px; border-radius: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.user .bubble { background: var(--accent); color: var(--on-accent); border-bottom-right-radius: 4px; }
+.msg.bot .bubble { background: var(--surface-2); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.msg.bot.selected .bubble { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.bubble.thinking { color: var(--muted); }
+.bubble.thinking::after { content: ""; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.2s steps(4) infinite; }
+@keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+@media (prefers-reduced-motion: reduce) { .bubble.thinking::after { animation: none; content: "..."; } }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-xs); padding: 2px 8px; border-radius: 6px; background: var(--accent-soft); color: var(--ink); line-height: 1.6; }
+.chip b { font-weight: 600; color: var(--muted); }
+.chip.route-ok { background: var(--ok-soft); color: var(--ok); }
+.chip.route-warn { background: var(--amber-soft); color: var(--amber); }
+.chip.route-danger { background: var(--danger-soft); color: var(--danger); }
+.chip.route-ok b, .chip.route-warn b, .chip.route-danger b { color: inherit; opacity: 0.8; }
+.msg-actions { display: flex; gap: 4px; }
+.link-btn { background: none; border: 0; padding: 2px 6px; font-size: var(--fs-xs); color: var(--accent); border-radius: 4px; text-decoration: underline; text-underline-offset: 2px; }
+.link-btn:hover { background: var(--accent-soft); }
+.note { font-size: var(--fs-xs); color: var(--muted); }
+
+.examples { padding: 12px 20px 0; display: flex; flex-wrap: wrap; gap: 8px; border-top: 1px solid var(--line); }
+.examples-label { width: 100%; font-size: var(--fs-xs); color: var(--muted); font-family: var(--font-mono); letter-spacing: 0.04em; }
+.ex { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: var(--fs-sm); text-align: left; max-width: 100%; }
+.ex:hover { border-color: var(--accent); }
+.ex span { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--amber); margin-right: 6px; }
+.composer { padding: 12px 20px 16px; display: flex; gap: 8px; align-items: flex-end; }
+.composer textarea { flex: 1; min-width: 0; resize: none; min-height: 46px; max-height: 160px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); line-height: 1.5; }
+.composer textarea:focus { outline: none; border-color: var(--accent); }
+.btn { border: 0; border-radius: 10px; padding: 0 18px; height: 46px; font-weight: 600; background: var(--accent); color: var(--on-accent); white-space: nowrap; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn.stop { background: var(--danger); color: var(--surface); }
+
+/* side rail */
+.side { display: flex; flex-direction: column; gap: 16px; min-height: 0; overflow-y: auto; }
+.side .panel { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.side h2 { margin: 0; font-size: var(--fs-md); font-weight: 700; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.side h2 .count { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--muted); font-weight: 400; }
+.docs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.doc { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
+.doc input { width: 16px; height: 16px; accent-color: var(--accent); }
+.doc-name { font-size: var(--fs-sm); font-weight: 600; overflow-wrap: anywhere; }
+.doc-sub { font-size: var(--fs-xs); color: var(--muted); font-family: var(--font-mono); }
+.badge { font-size: var(--fs-xs); padding: 1px 6px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.del { background: none; border: 1px solid var(--line); border-radius: 6px; font-size: var(--fs-xs); padding: 2px 8px; color: var(--muted); }
+.del:hover { color: var(--danger); border-color: var(--danger); }
+.drop { border: 1.5px dashed var(--line); border-radius: 8px; padding: 14px; text-align: center; font-size: var(--fs-sm); color: var(--muted); display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.drop.over { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+.drop label { color: var(--accent); font-weight: 600; text-decoration: underline; cursor: pointer; }
+.drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+details.paste summary { font-size: var(--fs-sm); color: var(--accent); cursor: pointer; }
+details.paste[open] { display: flex; flex-direction: column; gap: 8px; }
+.paste-body { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.paste-body input, .paste-body textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); font-size: var(--fs-sm); }
+.paste-body textarea { min-height: 110px; resize: vertical; font-family: var(--font-mono); font-size: var(--fs-xs); }
+.paste-body .btn { height: 36px; font-size: var(--fs-sm); align-self: flex-start; }
+
+.evi-empty { font-size: var(--fs-sm); color: var(--muted); }
+.evi-q { font-size: var(--fs-sm); color: var(--muted); }
+.evi-q b { color: var(--ink); font-weight: 600; }
+.evi-list { display: flex; flex-direction: column; gap: 8px; }
+.evi { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--surface-2); display: flex; flex-direction: column; gap: 6px; }
+.evi.used { border-color: var(--accent); }
+.evi-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.evi-label { font-weight: 600; font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.evi-tag { font-size: var(--fs-xs); color: var(--muted); font-family: var(--font-mono); white-space: nowrap; }
+.bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); }
+.evi details summary { font-size: var(--fs-xs); color: var(--accent); cursor: pointer; }
+.evi pre { margin: 6px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: var(--fs-xs); line-height: 1.55; color: var(--ink); max-height: 220px; overflow-y: auto; }
+.rules { margin: 0; padding-left: 18px; font-size: var(--fs-sm); color: var(--muted); display: flex; flex-direction: column; gap: 2px; }
+.rules b { color: var(--ink); font-weight: 600; }
+
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 16px; border-radius: 8px; font-size: var(--fs-sm); z-index: 20; max-width: calc(100% - 32px); }
+
+@media (max-width: 880px) {
+  html, body { height: auto; }
+  .app { height: auto; display: block; }
+  .main { grid-template-columns: minmax(0, 1fr); }
+  .chat { overflow: visible; }
+  .log { min-height: 45vh; overflow: visible; padding: 16px; }
+  .composer { position: sticky; bottom: 0; background: var(--surface); border-radius: 0 0 var(--radius) var(--radius); padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+  .examples { padding: 12px 16px 0; }
+  .side { overflow: visible; }
+}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="top-in">
+      <div class="brand">
+        <span class="brand-eyebrow">고객센터 · 매뉴얼 근거 응답</span>
+        <h1>한빛모터스 CS 안내 챗봇<small>(구 현대)</small></h1>
+      </div>
+      <div class="top-actions">
+        <span class="status" id="status" data-mode="checking"><span class="dot"></span><span id="status-text">연결 확인 중</span></span>
+        <button class="btn-ghost" id="export-all" type="button">대화 MD 저장</button>
+        <button class="btn-ghost" id="reset" type="button">새 대화</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="main">
+    <section class="panel chat" aria-label="상담 대화">
+      <div class="log" id="log" aria-live="polite"></div>
+      <div class="examples" id="examples">
+        <span class="examples-label">설계서 예시 문의 · 눌러서 보내기</span>
+      </div>
+      <form class="composer" id="composer">
+        <label for="q" class="sr" hidden>고객 문의</label>
+        <textarea id="q" rows="1" placeholder="고객 문의를 입력하세요 (Enter 보내기 · Shift+Enter 줄바꿈)"></textarea>
+        <button class="btn" id="send" type="submit">보내기</button>
+      </form>
+    </section>
+
+    <aside class="side">
+      <section class="panel" aria-labelledby="docs-h">
+        <h2 id="docs-h">참고 매뉴얼 <span class="count" id="chunk-count"></span></h2>
+        <ul class="docs" id="docs"></ul>
+        <div class="drop" id="drop">
+          <span>매뉴얼 파일(.md · .txt)을 여기에 끌어 놓거나</span>
+          <label for="file">파일 선택해서 추가</label>
+          <input type="file" id="file" accept=".md,.markdown,.txt,text/markdown,text/plain" multiple>
+        </div>
+        <details class="paste" id="paste">
+          <summary>텍스트로 붙여넣어 추가</summary>
+          <div class="paste-body">
+            <input id="paste-name" type="text" placeholder="문서 이름 (예: 2027 보증 정책 개정안)">
+            <textarea id="paste-text" placeholder="## 1. 장 제목&#10;본문… (## 제목 단위로 나눠 검색합니다)"></textarea>
+            <button class="btn" id="paste-add" type="button">매뉴얼 추가</button>
+          </div>
+        </details>
+        <p class="note">추가한 매뉴얼은 이 브라우저에만 저장됩니다. 체크를 끄면 검색에서 빠집니다.</p>
+      </section>
+
+      <section class="panel" aria-labelledby="evi-h">
+        <h2 id="evi-h">답변 근거 <span class="count" id="evi-count"></span></h2>
+        <div id="evidence"><p class="evi-empty">답변을 받으면 검색된 매뉴얼 조각이 여기에 표시됩니다. 8·9·10장(연결 기준·금지 응답·말투)은 매번 함께 넣습니다.</p></div>
+      </section>
+
+      <section class="panel" aria-labelledby="rule-h">
+        <h2 id="rule-h">응대 규칙</h2>
+        <ul class="rules">
+          <li><b>근거 없으면 연결</b> · 추측하지 않고 담당자에게 넘김</li>
+          <li><b>안전 먼저</b> · 경고등·연기·고전압·사고는 즉시 긴급출동</li>
+          <li><b>전제 바로잡기</b> · 틀린 정보는 먼저 고치고 답함</li>
+          <li><b>약속 금지</b> · 보상·할인·일정·예상 금액</li>
+          <li><b>말투</b> · 존댓말 3~5문장, 끝에 추가 도움 여부</li>
+          <li><b>회사명</b> · 현대는 한빛모터스의 옛 이름, 같은 회사</li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script type="text/markdown" id="base-manual">
+> 실습용 가상 데이터입니다. 실제 기업·고객의 자료가 아닙니다.
+
+# 한빛모터스 고객센터 응대 매뉴얼 (실습용 가상판, v1.0)
+
+- 대상: 고객센터 상담원 및 고객 응대 챗봇
+- 적용 차종: 한빛모터스 승용 전 차종 — 아라(소형 SUV), 누리(중형 세단), 바다(대형 SUV), 별빛EV(전기 해치백), 아라EV(전기 SUV)
+- 고객센터: 1500-0000(가상 번호) · 평일 09:00~18:00, 긴급출동은 24시간
+- 이 매뉴얼에 적혀 있지 않은 내용은 추측해서 답하지 않는다. 8장의 기준에 따라 담당자에게 연결한다.
+
+---
+
+## 1. 보증 기간·범위
+
+| 구분 | 기간 / 주행거리 (먼저 도래하는 기준) | 대상 부품 예시 |
+|---|---|---|
+| 일반 부품 | 3년 / 6만 km | 차체, 전장품, 공조, 오디오·내비게이션 |
+| 엔진·변속기 (내연기관 차종) | 3년 / 6만 km | 엔진 본체, 변속기, 구동축 |
+| EV 전용 부품 | 8년 / 16만 km | 고전압 배터리, 구동 모터, 인버터, 차량 탑재 충전기(OBC) |
+| 소모품 | 보증 제외 | 와이퍼 블레이드, 브레이크 패드, 필터류, 12V 보조배터리(1년 / 2만 km만 보증) |
+
+- 보증 시작일은 **최초 등록일**이다. 출고일이나 계약일이 아니다.
+- 고전압 배터리는 보증 기간 안에 **가용 용량이 70% 미만**으로 떨어지면 무상 수리 또는 교환 대상이다. 용량 측정은 지정 서비스센터 진단으로만 판정한다.
+- 차주가 바뀌어도 보증은 남은 기간만큼 그대로 승계된다. 별도 신청은 필요 없다.
+- 보증 제외: 사고·침수·화재, 순정 외 부품 장착이나 임의 개조로 생긴 고장, 정기점검 미이행이 원인으로 확인된 고장, 영업용(택시·렌터카) 차량의 일반 부품은 2년 / 4만 km로 단축.
+
+## 2. 정기점검
+
+| 차종 | 점검 주기 (먼저 도래하는 기준) | 기본 점검 비용 (공임, 부품 별도) |
+|---|---|---|
+| 내연기관 (아라·누리·바다) | 1년 또는 1만 km | 5만 5천 원 |
+| 전기차 (별빛EV·아라EV) | 1년 또는 2만 km | 4만 원 |
+
+- 출고 후 **첫 번째 정기점검 1회는 무상**이다(공임 기준, 교체 부품은 유상).
+- 전기차 점검에는 고전압 배터리 냉각수, 감속기 오일, 브레이크액, 실내 공조 필터 점검이 포함된다.
+- 점검 내역은 한빛모터스 앱 > 내 차 > 정비 이력에서 볼 수 있다.
+
+## 3. 리콜 확인 절차
+
+1. 고객에게 **차대번호(VIN) 17자리**를 받는다. 차량 번호판으로는 조회하지 않는다.
+2. 내부 리콜 조회 시스템에 입력해 결과를 그대로 안내한다. 조회 결과에 없는 리콜을 "곧 나올 것"이라고 말하지 않는다.
+3. 대상이면 가까운 서비스센터 예약을 함께 안내한다. 리콜 수리는 무상이며 보증 기간과 상관없다.
+4. 리콜 수리 전에 고객이 자비로 같은 부위를 수리했다면 **영수증 사본**을 받아 보상 심사를 접수한다. 보상 여부와 금액은 상담원이 약속하지 않는다.
+
+## 4. 충전(EV) 문의
+
+- 충전 방식: 완속(AC) 7kW·11kW, 급속(DC) 최대 200kW(별빛EV), 최대 240kW(아라EV). 실제 충전 속도는 배터리 온도·잔량·충전기 출력에 따라 달라진다고 안내한다.
+- 급속충전은 배터리 보호를 위해 **잔량 80%까지**를 권장한다. 80% 이후는 속도가 느려지는 것이 정상이다.
+- 겨울철 주행가능거리 감소는 정상 범위의 현상임을 안내하고, 출발 전 앱에서 **배터리 예열(컨디셔닝)** 을 켜도록 권한다.
+- 충전 오류 1차 안내:
+  - 충전기 화면에 오류가 뜨면 → 커넥터를 뽑았다 다시 꽂고, 다른 충전기에서 한 번 더 시도한다.
+  - 두 곳 이상에서 충전이 안 되면 → 차량 측 문제 가능성. 서비스센터 입고를 예약한다.
+  - 계기판에 고전압 경고등이 켜지면 → 충전을 중단하고 8장의 '안전 관련' 기준으로 즉시 연결한다.
+- 충전 요금·회원카드·충전소 위치는 각 **충전 사업자** 소관이다. 사업자 고객센터 확인을 안내한다.
+
+## 5. 예약 변경
+
+- 서비스 예약 변경·취소는 한빛모터스 앱 또는 고객센터에서 **예약일 전날 18:00까지** 가능하다.
+- 당일 변경은 앱에서 되지 않는다. 상담원이 해당 서비스센터에 직접 확인한다.
+- 예약 없이 방문한 고객은 당일 작업 여유가 있을 때만 받는다. 상담원은 당일 작업을 약속하지 않는다.
+- 같은 차량으로 노쇼(무단 불참)가 **3회** 누적되면 이후 30일 동안 앱 예약이 제한된다.
+
+## 6. 견적·할인 정책 한계
+
+- 상담원과 챗봇은 **공시된 차량 가격표**와 **현재 진행 중인 공식 프로모션**만 안내한다.
+- 공식 프로모션 외의 추가 할인, 법인·대량 구매 조건, 타사 견적과의 가격 맞춤은 안내하지 않는다. 영업 담당자에게 연결한다.
+- 견적서 발급은 영업점 담당자만 할 수 있다. 상담원은 "예상 금액"을 말하지 않는다.
+- 정부·지자체 전기차 보조금은 지자체·연도마다 다르다. 금액을 확정해서 말하지 않고, 해당 지자체 공고 확인을 안내한다.
+
+## 7. 개인정보 처리
+
+- 고객 정보 조회·변경은 **본인 확인**(이름 + 휴대전화 인증) 후에만 한다.
+- 다른 사람(가족 포함)의 계약·차량·연락처 정보는 어떤 형태로도 알려주지 않는다. 법정대리인은 서류 확인 후 영업점에서 처리한다.
+- 챗봇은 개인정보 변경·열람·삭제 요청을 **접수만** 하고 처리 결과를 직접 안내하지 않는다.
+- 상담 중 주민등록번호 전체, 카드번호, 계좌 비밀번호는 묻지도 받지도 않는다.
+
+## 8. 담당자 연결 기준
+
+다음 중 하나라도 해당하면 챗봇은 답변을 멈추고 상담원(또는 해당 부서)에 연결한다.
+
+1. **안전 관련**: 주행 중 경고등, 제동·조향 이상, 연기·타는 냄새, 고전압 경고, 사고 직후 → 즉시 안전한 곳에 정차하도록 안내하고 긴급출동(24시간)으로 연결.
+2. 보상·환불·법적 조치를 언급하는 경우 → 고객관리팀.
+3. 이 매뉴얼에 근거가 없는 질문 → 상담원.
+4. 고객이 같은 문제로 **3회 이상** 문의했거나 상담원 연결을 요청한 경우.
+5. 가격·할인 협상, 법인 구매 → 영업 담당.
+
+## 9. 금지 응답
+
+- 법률 판단: 사고 과실 비율, 소송 가능 여부, 계약 해지의 법적 효력 등 → "법률 판단은 드릴 수 없습니다"라고 안내.
+- 의료 판단: 사고 후 부상, 차량 내 냄새로 인한 두통 등 건강 문제 → 의료기관 상담 안내.
+- 확인되지 않은 정보: 신차 출시일, 미발표 가격, 미공지 리콜, 다른 고객 사례.
+- 경쟁사 차량에 대한 평가·비방.
+- 보상·할인·일정의 **약속**. 상담원도 챗봇도 확정되지 않은 것을 약속하지 않는다.
+
+## 10. 응대 말투와 마무리
+
+- 존댓말을 쓰고, 한 답변은 3~5문장 안에서 끝낸다.
+- 숫자(기간·거리·금액)는 반드시 이 매뉴얼의 값을 그대로 인용한다.
+- 답변 끝에는 추가로 도울 일이 있는지 묻는다.
+- 고객 질문의 전제가 이 매뉴얼과 다르면(예: 보증 기간을 다르게 알고 있음) 답하기 전에 먼저 매뉴얼 기준으로 바로잡는다.
+
+---
+
+*개정 이력: v1.0 (2026-10, 실습용 가상판). 이 문서는 교육용으로 만든 가상 매뉴얼이며, 실제 자동차 회사의 정책이 아니다.*
+</script>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const STORE_KEY = "hanbit-cs-manuals-v1";
+  const PHONE = "1500-0000";
+  const THRESH = 0.3;
+  const EXAMPLES = [
+    ["EX-01", "중고로 산 아라EV인데 배터리 보증이 저한테도 되나요?"],
+    ["EX-02", "누리 정기점검은 2만 km마다 하면 되죠?"],
+    ["EX-03", "바다 하이브리드 모델은 언제 출시돼요? 가격도 알려 주세요."],
+    ["EX-04", "급속충전하는데 계기판에 고전압 경고등이 떴어요. 그냥 계속 충전해도 돼요?"],
+    ["EX-05", "별빛EV 사려는데 보조금 얼마 받아요? 그리고 급속충전 요금은 얼마예요?"],
+  ];
+
+  const RULES = [
+    "당신은 한빛모터스 고객센터 안내 챗봇입니다.",
+    "매 질문마다 [참고 문서]로 주어진 CS 응대 매뉴얼 조각에 적힌 내용만 근거로 답합니다. 모델이 원래 알고 있는 자동차 지식이나 다른 회사 정책은 쓰지 않습니다.",
+    "",
+    "규칙",
+    "1. 매뉴얼에 없는 내용은 추측하지 말고 \"정확히 안내해 드리기 어렵습니다\"라고 말한 뒤 상담원에게 연결합니다(평일 09:00~18:00, " + PHONE + ").",
+    "2. 경고등·제동·조향 이상·연기·타는 냄새·고전압 경고·사고가 언급되면 다른 답보다 먼저 안전한 곳에 정차하도록 안내하고 긴급출동(24시간)으로 연결합니다. 원인을 진단하지 않습니다.",
+    "3. 보상·환불·법적 조치 → 고객관리팀, 가격 협상·추가 할인·법인 구매 → 영업 담당, 같은 문제로 3회 이상 문의했거나 상담원을 요청하면 → 상담원으로 연결합니다.",
+    "4. 법률·의료 판단, 미확인 정보(신차 출시일, 미발표 가격, 미공지 리콜, 다른 고객 사례), 경쟁사 평가는 하지 않습니다.",
+    "5. 보상·할인·일정을 약속하지 않고, 예상 금액을 말하지 않습니다.",
+    "6. 숫자(기간·거리·금액)는 매뉴얼 값을 그대로 씁니다. 환산하거나 반올림하지 않습니다.",
+    "7. 고객의 전제가 매뉴얼과 다르면 먼저 바로잡고 답합니다.",
+    "8. 주민등록번호 전체, 카드번호, 계좌 비밀번호는 묻지도 받지도 않습니다. 개인정보 변경·열람·삭제는 접수만 합니다.",
+    "9. 존댓말로 3~5문장 안에 답하고, 마지막 문장은 \"더 도와드릴 일이 있을까요?\"로 끝냅니다.",
+    "10. 회사명: '현대', '현대차', '현대자동차'는 한빛모터스의 옛 이름이며 같은 회사입니다. 고객이 옛 이름으로 물어도 같은 회사 문의로 보고 매뉴얼대로 답하며, 회사명을 지적하지 않습니다. 답변에서는 '한빛모터스'라고 씁니다.",
+    "11. 추가 매뉴얼이 기본 매뉴얼과 다르게 적혀 있으면 추가 매뉴얼을 따르되, 근거 라벨에 그 문서를 적습니다.",
+    "",
+    "출력 형식",
+    "- 고객에게 보일 답변 문장만 먼저 씁니다. 제목·목록·굵은 글씨 없이 평범한 문장으로 씁니다.",
+    "- 맨 마지막 줄에 아래 형식의 메타 정보를 한 줄로 붙입니다. 이 줄은 고객에게 보이지 않습니다.",
+    "@@META {\"근거\":[\"1장\"],\"처리\":\"바로 답함\",\"연결\":\"없음\"}",
+    "- 근거: 실제로 답에 쓴 참고 문서 조각의 라벨 목록. 근거가 없으면 [].",
+    "- 처리: \"바로 답함\" | \"전제 바로잡기\" | \"부분 근거\" | \"근거 없음 → 연결\" | \"안전 우선\" | \"거절\" 중 하나.",
+    "- 연결: \"없음\" | \"상담원\" | \"고객관리팀\" | \"영업 담당\" | \"긴급출동\" 중 하나.",
+  ].join("\n");
+
+  // Query expansion: everyday words -> manual vocabulary
+  const ALIAS = [[/현대\s*자동차|현대차|현대/g, "한빛모터스"]];
+  const SYN = [
+    [/배터리/, "고전압 배터리 보증 용량"],
+    [/보증|워런티|무상\s*수리/, "보증 기간 범위"],
+    [/중고|차주|명의|양도/, "차주 승계 보증"],
+    [/점검|정비|오일/, "정기점검 주기 비용"],
+    [/리콜/, "리콜 차대번호 조회"],
+    [/충전|kw|완속|급속/, "충전 급속 완속"],
+    [/겨울|주행\s*가능|주행거리/, "겨울철 주행가능거리 예열"],
+    [/예약|노쇼|방문/, "예약 변경 취소"],
+    [/가격|할인|깎|견적|프로모션|얼마에|법인/, "견적 할인 프로모션 가격표 영업"],
+    [/보조금/, "보조금 지자체 공고"],
+    [/요금|회원\s*카드|충전소/, "충전 사업자 요금 회원카드"],
+    [/개인정보|연락처|주소|전화번호|계약\s*정보|탈퇴/, "개인정보 본인 확인"],
+    [/보상|환불|소송|고소|변호사/, "보상 환불 법적 조치 고객관리팀"],
+    [/출시|신차|신모델|나와요|나오나요/, "확인되지 않은 정보 신차 출시일 미발표 가격"],
+    [/출고|인도|탁송|언제\s*(나와|받)/, "출고 인도 일정"],
+    [/상담원|사람|직원\s*연결/, "상담원 연결"],
+  ];
+  const STOP = new Set(["알려", "려주", "주세", "세요", "나요", "해요", "어요", "아요", "인가", "가요", "는데", "에요", "예요", "습니", "니다", "한빛", "빛모", "모터", "터스", "되나", "하나", "는지", "궁금", "금해", "싶어", "자동", "동차", "얼마", "마예", "돼요", "되요"]);
+
+  const SAFETY = /경고등|브레이크.{0,6}(안|밀|이상|고장)|제동|조향|핸들.{0,6}(안|무거|떨|이상|잠)|연기|타는\s*냄새|탄\s*냄새|고전압|사고\s*(가\s*)?(났|나서|직후|당)|불이\s*(났|붙)|화재/;
+  const ROUTES = [
+    { re: /보상|환불|소송|고소|변호사|법적/, to: "고객관리팀", how: "근거 없음 → 연결",
+      text: "불편을 드려 죄송합니다. 보상·환불·법적 조치에 관한 문의는 제가 판단하거나 약속해 드릴 수 없어 고객관리팀 담당자가 직접 확인해 드립니다. 바로 연결해 드리겠습니다(평일 09:00~18:00, " + PHONE + "). 더 도와드릴 일이 있을까요?" },
+    { re: /깎|추가\s*할인|더\s*싸|법인|대량\s*구매|타사\s*견적|네고/, to: "영업 담당", how: "근거 없음 → 연결",
+      text: "저희는 공시된 차량 가격표와 현재 진행 중인 공식 프로모션만 안내해 드릴 수 있습니다. 추가 할인이나 법인·대량 구매 조건은 영업 담당자가 확인해 드립니다. 영업 담당자에게 연결해 드릴까요? 더 도와드릴 일이 있을까요?" },
+    { re: /상담원|사람이랑|직원\s*연결|직원이랑/, to: "상담원", how: "근거 없음 → 연결",
+      text: "네, 상담원에게 바로 연결해 드리겠습니다. 고객센터 운영 시간은 평일 09:00~18:00이며, 긴급출동은 24시간 이용하실 수 있습니다(" + PHONE + "). 더 도와드릴 일이 있을까요?" },
+  ];
+
+  const state = { docs: [], chunks: [], df: new Map(), msgs: [], sample: null, downloads: null, mode: "checking", busy: false, ctl: null, selected: null };
+
+  // ---------- manuals ----------
+  function loadDocs() {
+    const base = { id: "base", name: "한빛모터스 CS 응대 매뉴얼 v1.0", text: $("base-manual").textContent.trim(), builtin: true, on: true };
+    let extra = [];
+    try { extra = JSON.parse(localStorage.getItem(STORE_KEY) || "[]"); } catch (e) { extra = []; }
+    if (!Array.isArray(extra)) extra = [];
+    state.docs = [base, ...extra.filter((d) => d && d.id && typeof d.text === "string")];
+    reindex();
+  }
+  function saveDocs() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state.docs.filter((d) => !d.builtin))); } catch (e) { /* storage unavailable: keep in memory */ }
+  }
+  function addDoc(name, text) {
+    text = String(text || "").replace(/\r/g, "").trim();
+    if (text.length < 20) { toast("내용이 너무 짧아 추가하지 않았습니다."); return false; }
+    const doc = { id: "u" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: (name || "추가 매뉴얼").trim(), text, on: true, added: new Date().toISOString() };
+    state.docs.push(doc);
+    saveDocs(); reindex(); renderDocs();
+    toast("'" + doc.name + "'를 추가했습니다 · 조각 " + state.chunks.filter((c) => c.docId === doc.id).length + "개");
+    return true;
+  }
+
+  function norm(s) {
+    s = String(s).toLowerCase();
+    for (const [re, v] of ALIAS) s = s.replace(re, v);
+    return s.replace(/[^0-9a-z가-힣]+/g, " ");
+  }
+  function grams(s) {
+    const set = new Set();
+    for (const w of norm(s).split(" ")) {
+      if (w.length < 2) continue;
+      for (let i = 0; i < w.length - 1; i++) { const g = w.slice(i, i + 2); if (!STOP.has(g)) set.add(g); }
+    }
+    return set;
+  }
+  function chunkDoc(doc) {
+    const lines = doc.text.replace(/\r/g, "").split("\n");
+    const hasH2 = lines.some((l) => /^##\s/.test(l));
+    const head = hasH2 ? /^##\s+(.*)/ : /^#{1,3}\s+(.*)/;
+    const raw = []; let title = "개요"; let buf = [];
+    const flush = () => { const t = buf.join("\n").trim(); if (t.replace(/[-*#>|\s]/g, "").length > 10) raw.push({ title, text: t }); buf = []; };
+    for (const l of lines) { const m = l.match(head); if (m) { flush(); title = m[1].trim(); } buf.push(l); }
+    flush();
+    const out = [];
+    for (const c of raw) {
+      if (c.text.length <= 1600) { out.push(c); continue; }
+      const paras = c.text.split(/\n\s*\n/); let acc = ""; let k = 1;
+      for (const p of paras) {
+        if (acc && (acc + p).length > 1000) { out.push({ title: c.title + " (" + k++ + ")", text: acc.trim() }); acc = ""; }
+        acc += p + "\n\n";
+      }
+      if (acc.trim()) out.push({ title: k > 1 ? c.title + " (" + k + ")" : c.title, text: acc.trim() });
+    }
+    return out.map((c, i) => {
+      const n = (c.title.match(/^(\d+)\s*[.장]/) || [])[1];
+      const label = doc.builtin ? (n ? n + "장" : c.title) : doc.name + " · " + (n ? n + "장" : c.title);
+      return { ...c, id: doc.id + "#" + i, docId: doc.id, docName: doc.name, builtin: !!doc.builtin, num: n || "", label, g: grams(c.title + "\n" + c.text), tg: grams(c.title) };
+    });
+  }
+  function reindex() {
+    state.chunks = state.docs.flatMap(chunkDoc);
+    state.df = new Map();
+    for (const c of state.chunks) for (const g of c.g) state.df.set(g, (state.df.get(g) || 0) + 1);
+  }
+  const idf = (g) => Math.log(1 + state.chunks.length / (state.df.get(g) || 0.5));
+
+  function retrieve(q) {
+    let expanded = q;
+    for (const [re, add] of SYN) if (re.test(q)) expanded += " " + add;
+    const qg = grams(expanded);
+    const total = [...qg].reduce((s, g) => s + idf(g), 0) || 1;
+    const live = new Set(state.docs.filter((d) => d.on).map((d) => d.id));
+    const scored = state.chunks.filter((c) => live.has(c.docId)).map((c) => {
+      let s = 0, t = 0;
+      for (const g of qg) { if (c.g.has(g)) s += idf(g); if (c.tg.has(g)) t += idf(g); }
+      return { c, score: Math.min(1, (s + 0.6 * t) / total) };
+    }).sort((a, b) => b.score - a.score);
+    const top = scored.filter((x) => x.score > 0.04).slice(0, 3);
+    const pinnedNums = ["8", "9", "10"];
+    const pinned = state.chunks.filter((c) => c.builtin && pinnedNums.includes(c.num) && !top.some((x) => x.c.id === c.id))
+      .map((c) => ({ c, score: (scored.find((x) => x.c.id === c.id) || { score: 0 }).score, pinned: true }));
+    return { top, pinned, best: top.length ? top[0].score : 0 };
+  }
+
+  // ---------- answering ----------
+  function contextBlock(r) {
+    return [...r.top, ...r.pinned].map((x) =>
+      "### 라벨: " + x.c.label + "  (출처: " + x.c.docName + (x.pinned ? ", 항상 포함" : ", 관련도 " + Math.round(x.score * 100) + "%") + ")\n" + x.c.text
+    ).join("\n\n");
+  }
+  function buildInput(q, r) {
+    const history = [];
+    const prior = state.msgs.slice(0, -2).filter((m) => !m.error && m.text).slice(-8);
+    for (const m of prior) history.push({ role: m.role === "user" ? "user" : "assistant", content: m.role === "user" ? "[고객 문의]\n" + m.text : m.text });
+    while (history.length && history[0].role !== "user") history.shift();
+    const final = "[참고 문서]\n" + contextBlock(r) + "\n\n[검색 관련도] 가장 관련 있는 조각 " + Math.round(r.best * 100) + "% (" + (r.best < THRESH ? "낮음: 근거가 없을 가능성이 큽니다" : "보통 이상") + ")\n\n[고객 문의]\n" + q;
+    return [{ role: "user", content: RULES }, ...history, { role: "user", content: final }];
+  }
+  function splitMeta(text) {
+    const i = text.lastIndexOf("@@META");
+    if (i < 0) return { answer: text.replace(/@+\s*$/, "").trim(), meta: null };
+    let meta = null;
+    try { const j = text.slice(i + 6).trim(); meta = JSON.parse(j.slice(j.indexOf("{"), j.lastIndexOf("}") + 1)); } catch (e) { meta = null; }
+    return { answer: text.slice(0, i).trim(), meta };
+  }
+  function safetyAnswer(q) {
+    const charging = /충전/.test(q);
+    return [
+      charging ? "지금 바로 충전을 중단해 주세요." : "지금 바로 안전한 곳에 차를 세워 주세요.",
+      "원인은 제가 판단해 드릴 수 없어 24시간 긴급출동으로 바로 연결해 드리겠습니다(" + PHONE + ").",
+      "더 도와드릴 일이 있을까요?",
+    ].join(" ");
+  }
+  function excerpt(chunk, q) {
+    const qg = grams(q);
+    const lines = chunk.text.split("\n").map((l) => l.trim()).filter((l) => l && !/^\|?\s*-{3}/.test(l) && !/^#/.test(l) && !/^>/.test(l));
+    const ranked = lines.map((l, i) => { let s = 0; for (const g of grams(l)) if (qg.has(g)) s += idf(g); return { l, i, s }; });
+    const pick = ranked.filter((x) => x.s > 0).sort((a, b) => b.s - a.s).slice(0, 4).sort((a, b) => a.i - b.i);
+    const use = pick.length ? pick : ranked.slice(0, 3);
+    return use.map((x) => "· " + x.l.replace(/\*\*/g, "").replace(/^[-*]\s+|^\d+\.\s+/, "").replace(/^\|\s*|\s*\|$/g, "").replace(/\s*\|\s*/g, " · ")).join("\n");
+  }
+  function searchAnswer(q, r) {
+    for (const rt of ROUTES) if (rt.re.test(q)) return { text: rt.text, meta: { 근거: ["8장"], 처리: rt.how, 연결: rt.to } };
+    if (r.best < THRESH || !r.top.length) {
+      return { text: "해당 내용은 매뉴얼에서 근거를 찾지 못해 정확히 안내해 드리기 어렵습니다. 추측해서 안내해 드리지 않고 상담원에게 연결해 드리겠습니다(평일 09:00~18:00, " + PHONE + "). 더 도와드릴 일이 있을까요?", meta: { 근거: [], 처리: "근거 없음 → 연결", 연결: "상담원" } };
+    }
+    const top = r.top[0].c;
+    return {
+      text: "매뉴얼 " + top.label + "(" + top.title.replace(/^\d+\.\s*/, "") + ")에 이렇게 안내되어 있습니다.\n" + excerpt(top, q) + "\n더 도와드릴 일이 있을까요?",
+      meta: { 근거: [top.label], 처리: "검색 결과 인용", 연결: "없음" },
+    };
+  }
+
+  async function ask(q) {
+    q = q.trim();
+    if (!q || state.busy) return;
+    const r = retrieve(q);
+    const evidence = [...r.top, ...r.pinned].map((x) => ({ id: x.c.id, label: x.c.label, title: x.c.title, docName: x.c.docName, score: x.score, pinned: !!x.pinned, text: x.c.text }));
+    state.msgs.push({ id: uid(), role: "user", text: q, time: new Date() });
+    const bot = { id: uid(), role: "bot", text: "", meta: null, evidence, best: r.best, source: "", time: new Date(), pending: true };
+    state.msgs.push(bot);
+    state.selected = bot.id;
+    render();
+
+    if (SAFETY.test(q)) {
+      Object.assign(bot, { text: safetyAnswer(q), meta: { 근거: ["8장"], 처리: "안전 우선", 연결: "긴급출동" }, source: "안전 규칙(즉시 응답)", pending: false });
+      render(); return;
+    }
+    if (state.mode !== "claude" || !state.sample) {
+      const a = searchAnswer(q, r);
+      Object.assign(bot, { text: a.text, meta: a.meta, source: "검색 전용 모드", pending: false });
+      render(); return;
+    }
+
+    setBusy(true);
+    state.ctl = new AbortController();
+    const bubble = () => document.querySelector('[data-id="' + bot.id + '"] .bubble');
+    try {
+      const { text, truncated } = await state.sample(buildInput(q, r), {
+        cache: false,
+        signal: state.ctl.signal,
+        onText: ({ text }) => {
+          bot.pending = false;
+          const el = bubble();
+          if (el) { el.classList.remove("thinking"); el.textContent = text.split("@@META")[0].replace(/@+\s*$/, "").trimEnd(); scrollLog(); }
+        },
+      });
+      const { answer, meta } = splitMeta(text);
+      Object.assign(bot, { text: answer, meta: meta || { 근거: [], 처리: "확인 필요", 연결: "없음" }, source: "Claude · 매뉴얼 근거 RAG", pending: false, truncated });
+    } catch (e) {
+      const code = e && e.code;
+      if (code === "cancelled") {
+        Object.assign(bot, { text: (e.text || "").split("@@META")[0].trim() || "응답을 멈췄습니다.", meta: null, source: "중단됨", pending: false, error: !e.text });
+      } else if (["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"].includes(code)) {
+        setMode("search", "Claude 사용이 허용되지 않아 검색 전용으로 답합니다");
+        const a = searchAnswer(q, r);
+        Object.assign(bot, { text: a.text, meta: a.meta, source: "검색 전용 모드", pending: false });
+      } else {
+        const why = code === "rate_limited" ? "요청이 많아 잠시 후 다시 보내 주세요." : code === "session_expired" ? "Claude 로그인이 만료되었습니다. 다시 로그인한 뒤 보내 주세요." : code === "refused" ? "이 문의는 답변할 수 없습니다. 표현을 바꿔 다시 보내 주세요." : "응답을 받는 중 연결이 끊겼습니다. 다시 보내 주세요.";
+        const partial = code === "refused" ? "" : (e && e.text ? e.text.split("@@META")[0].trim() : "");
+        Object.assign(bot, { text: partial || why, meta: null, source: partial ? "응답 중단: " + why : "오류", pending: false, error: !partial });
+      }
+    } finally {
+      setBusy(false);
+      state.ctl = null;
+      render();
+    }
+  }
+
+  // ---------- markdown export ----------
+  const pad = (n) => String(n).padStart(2, "0");
+  const stamp = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  const fileStamp = (d) => "" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "-" + pad(d.getHours()) + pad(d.getMinutes());
+  function pairMd(u, b, n) {
+    const m = b.meta || {};
+    const lines = [
+      "## Q" + n + ". " + u.text.replace(/\n+/g, " "),
+      "",
+      "- 문의 시각: " + stamp(u.time),
+      "",
+      "### 답변",
+      "",
+      b.text.split("\n").map((l) => "> " + l).join("\n"),
+      "",
+      "| 항목 | 내용 |",
+      "|---|---|",
+      "| 처리 방식 | " + (m.처리 || "-") + " |",
+      "| 근거 | " + ((m.근거 && m.근거.length) ? m.근거.join(" · ") : "없음") + " |",
+      "| 연결 | " + (m.연결 || "-") + " |",
+      "| 응답 방식 | " + (b.source || "-") + " |",
+      "",
+      "### 검색된 근거",
+      "",
+      ...b.evidence.map((e) => "- **" + e.label + "** " + e.title + " — " + (e.pinned ? "항상 포함" : "관련도 " + Math.round(e.score * 100) + "%") + (e.docName && !e.label.startsWith(e.docName) ? " · " + e.docName : "")),
+      "",
+    ];
+    return lines.join("\n");
+  }
+  function buildMd(pairs) {
+    const now = new Date();
+    const docs = state.docs.filter((d) => d.on).map((d) => "- " + d.name + (d.builtin ? " (기본)" : " (추가)"));
+    return [
+      "---",
+      "title: 한빛모터스 CS 챗봇 응답 기록",
+      "created: " + stamp(now),
+      "tags: [CS챗봇, 응답기록]",
+      "---",
+      "",
+      "# 한빛모터스 CS 챗봇 응답 기록",
+      "",
+      "- 저장 시각: " + stamp(now),
+      "- 문의 수: " + pairs.length + "건",
+      "- 회사명: 한빛모터스 (구 현대)",
+      "",
+      "**참고 매뉴얼**",
+      "",
+      ...docs,
+      "",
+      "---",
+      "",
+      ...pairs.map(([u, b], i) => pairMd(u, b, i + 1)),
+    ].join("\n");
+  }
+  function pairs() {
+    const out = [];
+    for (let i = 0; i < state.msgs.length - 1; i++) {
+      const u = state.msgs[i], b = state.msgs[i + 1];
+      if (u.role === "user" && b.role === "bot" && !b.pending) out.push([u, b]);
+    }
+    return out;
+  }
+  async function saveMd(filename, md) {
+    if (state.downloads) {
+      try { await state.downloads.save({ filename, data: md }); toast("저장했습니다: " + filename); }
+      catch (e) {
+        if (e && e.code === "declined") toast("저장을 취소했습니다.");
+        else if (e && e.code === "rate_limited") toast("저장 창이 이미 열려 있습니다. 잠시 후 다시 눌러 주세요.");
+        else toast("이 화면에서는 파일 저장을 쓸 수 없습니다.");
+      }
+      return;
+    }
+    if (window.claude) { toast("이 화면에서는 파일 저장을 쓸 수 없습니다."); return; }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([md], { type: "text/markdown;charset=utf-8" }));
+    a.download = filename;
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    toast("저장했습니다: " + filename);
+  }
+
+  // ---------- rendering ----------
+  const uid = () => Math.random().toString(36).slice(2, 10);
+  function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function routeClass(m) {
+    if (!m) return "";
+    if (m.처리 === "안전 우선" || m.연결 === "긴급출동") return "route-danger";
+    if (/연결|거절|부분/.test(m.처리 || "") || (m.연결 && m.연결 !== "없음")) return "route-warn";
+    return "route-ok";
+  }
+  function chip(label, value, cls) { const c = el("span", "chip " + (cls || "")); c.append(el("b", null, label), document.createTextNode(value)); return c; }
+
+  function welcome() {
+    const w = el("div", "msg bot");
+    w.append(el("span", "who", "챗봇 · 안내"));
+    w.append(el("div", "bubble", "안녕하세요, 한빛모터스(구 현대) 고객센터 안내 챗봇입니다. 보증, 정기점검, 리콜, 전기차 충전, 예약 변경, 견적·할인 기준을 매뉴얼에 적힌 그대로 안내해 드립니다.\n매뉴얼에 없는 내용은 추측하지 않고 담당자에게 연결해 드립니다. 아래 예시 문의를 누르거나 직접 입력해 보세요."));
+    return w;
+  }
+  function render() {
+    const log = $("log");
+    log.replaceChildren(welcome());
+    state.msgs.forEach((m, i) => {
+      const wrap = el("div", "msg " + m.role + (m.id === state.selected ? " selected" : ""));
+      wrap.dataset.id = m.id;
+      wrap.append(el("span", "who", (m.role === "user" ? "고객" : "챗봇") + " · " + pad(m.time.getHours()) + ":" + pad(m.time.getMinutes())));
+      const b = el("div", "bubble" + (m.pending ? " thinking" : ""), m.pending ? "매뉴얼을 찾아 답변을 쓰는 중" : m.text);
+      wrap.append(b);
+      if (m.role === "bot" && !m.pending) {
+        const meta = el("div", "meta");
+        if (m.meta) {
+          meta.append(chip("처리 ", m.meta.처리 || "-", routeClass(m.meta)));
+          meta.append(chip("근거 ", (m.meta.근거 && m.meta.근거.length) ? m.meta.근거.join(" · ") : "없음"));
+          if (m.meta.연결 && m.meta.연결 !== "없음") meta.append(chip("연결 ", m.meta.연결, routeClass(m.meta)));
+        }
+        if (m.source) meta.append(el("span", "note", m.source + (m.truncated ? " · 답변이 길어 잘렸습니다" : "")));
+        wrap.append(meta);
+        const act = el("div", "msg-actions");
+        const see = el("button", "link-btn", "근거 보기"); see.type = "button";
+        see.onclick = () => { state.selected = m.id; render(); };
+        const dl = el("button", "link-btn", "이 답변 MD 저장"); dl.type = "button";
+        dl.onclick = () => { const u = state.msgs[i - 1]; saveMd("CS챗봇_답변_" + fileStamp(m.time) + ".md", buildMd([[u, m]])); };
+        act.append(see, dl);
+        wrap.append(act);
+      }
+      log.append(wrap);
+    });
+    renderEvidence();
+    scrollLog();
+  }
+  function scrollLog() { const log = $("log"); log.scrollTop = log.scrollHeight; }
+
+  function renderEvidence() {
+    const box = $("evidence");
+    const m = state.msgs.find((x) => x.id === state.selected && x.role === "bot");
+    if (!m) { $("evi-count").textContent = ""; return; }
+    const qi = state.msgs.indexOf(m) - 1;
+    const used = new Set((m.meta && m.meta.근거) || []);
+    box.replaceChildren();
+    const q = el("p", "evi-q"); q.append(document.createTextNode("문의: "), el("b", null, state.msgs[qi] ? state.msgs[qi].text : ""));
+    box.append(q);
+    const list = el("div", "evi-list");
+    for (const e of m.evidence) {
+      const card = el("div", "evi" + (used.has(e.label) ? " used" : ""));
+      const head = el("div", "evi-head");
+      head.append(el("span", "evi-label", e.label + "  " + e.title.replace(/^\d+\.\s*/, "")), el("span", "evi-tag", e.pinned ? "항상 포함" : Math.round(e.score * 100) + "%"));
+      card.append(head);
+      if (!e.pinned) { const bar = el("div", "bar"); const fill = el("i"); fill.style.width = Math.round(e.score * 100) + "%"; bar.append(fill); card.append(bar); }
+      if (!e.label.startsWith(e.docName)) card.append(el("span", "evi-tag", e.docName + (used.has(e.label) ? " · 답변에 사용" : "")));
+      else if (used.has(e.label)) card.append(el("span", "evi-tag", "답변에 사용"));
+      const d = el("details"); d.append(el("summary", null, "원문 보기"), el("pre", null, e.text)); card.append(d);
+      list.append(card);
+    }
+    box.append(list);
+    $("evi-count").textContent = "검색 " + m.evidence.filter((e) => !e.pinned).length + " + 고정 " + m.evidence.filter((e) => e.pinned).length;
+  }
+
+  function renderDocs() {
+    const ul = $("docs");
+    ul.replaceChildren();
+    for (const d of state.docs) {
+      const li = el("li", "doc");
+      const cb = el("input"); cb.type = "checkbox"; cb.checked = d.on; cb.disabled = !!d.builtin; cb.id = "doc-" + d.id;
+      cb.setAttribute("aria-label", d.name + " 검색에 포함");
+      cb.onchange = () => { d.on = cb.checked; saveDocs(); renderDocs(); };
+      const info = el("div");
+      const name = el("div", "doc-name", d.name);
+      const n = state.chunks.filter((c) => c.docId === d.id).length;
+      info.append(name, el("div", "doc-sub", "조각 " + n + "개 · " + d.text.length.toLocaleString() + "자" + (d.on ? "" : " · 검색 제외")));
+      li.append(cb, info);
+      if (d.builtin) li.append(el("span", "badge", "기본"));
+      else { const del = el("button", "del", "삭제"); del.type = "button"; del.onclick = () => { state.docs = state.docs.filter((x) => x.id !== d.id); saveDocs(); reindex(); renderDocs(); toast("'" + d.name + "'를 삭제했습니다."); }; li.append(del); }
+      ul.append(li);
+    }
+    $("chunk-count").textContent = state.docs.filter((d) => d.on).length + "개 문서 · 조각 " + state.chunks.filter((c) => state.docs.find((d) => d.id === c.docId && d.on)).length + "개";
+  }
+
+  function setMode(mode, label) {
+    state.mode = mode;
+    $("status").dataset.mode = mode;
+    $("status-text").textContent = label || (mode === "claude" ? "Claude 응답 사용" : mode === "search" ? "검색 전용 모드" : "연결 확인 중");
+  }
+  function setBusy(b) {
+    state.busy = b;
+    const s = $("send");
+    s.textContent = b ? "멈추기" : "보내기";
+    s.classList.toggle("stop", b);
+    s.type = b ? "button" : "submit";
+    document.querySelectorAll(".ex").forEach((x) => (x.disabled = b));
+  }
+  let toastTimer;
+  function toast(t) {
+    let e = document.querySelector(".toast");
+    if (!e) { e = el("div", "toast"); e.setAttribute("role", "status"); document.body.append(e); }
+    e.textContent = t; e.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => (e.hidden = true), 2600);
+  }
+
+  // ---------- wiring ----------
+  function wire() {
+    const ta = $("q");
+    const grow = () => { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, 160) + "px"; };
+    ta.addEventListener("input", grow);
+    ta.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); $("composer").requestSubmit(); }
+    });
+    $("composer").addEventListener("submit", (e) => { e.preventDefault(); if (state.busy) return; const v = ta.value; ta.value = ""; grow(); ask(v); });
+    $("send").addEventListener("click", () => { if (state.busy && state.ctl) state.ctl.abort(); });
+
+    const ex = $("examples");
+    for (const [id, q] of EXAMPLES) {
+      const b = el("button", "ex"); b.type = "button"; b.append(el("span", null, id), document.createTextNode(q));
+      b.onclick = () => ask(q);
+      ex.append(b);
+    }
+
+    $("export-all").onclick = () => {
+      const p = pairs();
+      if (!p.length) { toast("저장할 답변이 아직 없습니다."); return; }
+      saveMd("CS챗봇_대화기록_" + fileStamp(new Date()) + ".md", buildMd(p));
+    };
+    $("reset").onclick = () => { if (state.ctl) state.ctl.abort(); state.msgs = []; state.selected = null; render(); $("evidence").replaceChildren(el("p", "evi-empty", "답변을 받으면 검색된 매뉴얼 조각이 여기에 표시됩니다.")); $("evi-count").textContent = ""; };
+
+    const readFiles = async (files) => {
+      for (const f of files) {
+        if (!/\.(md|markdown|txt)$/i.test(f.name)) { toast(f.name + ": .md 또는 .txt 파일만 추가할 수 있습니다."); continue; }
+        if (f.size > 1024 * 1024) { toast(f.name + ": 1MB 이하 파일만 추가할 수 있습니다."); continue; }
+        addDoc(f.name.replace(/\.(md|markdown|txt)$/i, ""), await f.text());
+      }
+    };
+    $("file").addEventListener("change", (e) => { readFiles([...e.target.files]); e.target.value = ""; });
+    const drop = $("drop");
+    ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+    ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+    drop.addEventListener("drop", (e) => readFiles([...(e.dataTransfer ? e.dataTransfer.files : [])]));
+    $("paste-add").onclick = () => {
+      if (addDoc($("paste-name").value || "붙여넣은 매뉴얼", $("paste-text").value)) { $("paste-name").value = ""; $("paste-text").value = ""; $("paste").open = false; }
+    };
+  }
+
+  async function connect() {
+    if (!window.claude || typeof window.claude.use !== "function") { setMode("search", "검색 전용 모드 (Claude 미연결)"); return; }
+    const [s, d] = await Promise.all([
+      window.claude.use("sample").catch(() => null),
+      window.claude.use("downloads").catch(() => null),
+    ]);
+    state.sample = s; state.downloads = d;
+    setMode(s ? "claude" : "search", s ? "Claude 응답 사용" : "검색 전용 모드 (Claude 미연결)");
+  }
+
+  loadDocs();
+  renderDocs();
+  wire();
+  render();
+  connect();
+  window.__cs = { retrieve, state, buildMd, pairs };
+})();
+</script>
+
+</body></html>

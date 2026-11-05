@@ -1,0 +1,14 @@
+{
+  "description": "강의 저장소 Day2_아이오닉5_VOC리뷰30건_가상.csv (실습용 가상 데이터). 비고 열은 제외.",
+  "fixed": true,
+  "source": {
+    "kind": "file",
+    "name": "reviews.csv",
+    "url": "/_blob/2013a200e449a1157a6212e7d7863ab4"
+  },
+  "title": "아이오닉5 리뷰 30건",
+  "updated": {
+    "at": "2026-10-18T15:42:00+09:00",
+    "by": "Claude"
+  }
+}

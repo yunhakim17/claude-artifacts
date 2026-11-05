@@ -1,0 +1,93 @@
+[
+ {
+  "id": "hmg_pleos",
+  "company": "현대차그룹",
+  "when": "2025.3",
+  "order": 2025.2,
+  "event": "Pleos 브랜드 발표, 2027년 말 L2+ 목표 제시",
+  "status": "발표",
+  "source_url": "https://www.hyundai.com/worldwide/en/newsroom/detail/hyundai-motor-group-launches-%25E2%2580%2598pleos%25E2%2580%2599-software-brand%252C-unveiling-new-sdv-technologies-and-collaborations-0000000921"
+ },
+ {
+  "id": "hmg_pace_plan",
+  "company": "현대차그룹",
+  "when": "2025.11",
+  "order": 2025.85,
+  "event": "SDV 페이스카 계획 발표",
+  "status": "발표",
+  "source_url": "https://www.hyundai.com/worldwide/en/newsroom/detail/0000001062"
+ },
+ {
+  "id": "vw_roadmap",
+  "company": "폭스바겐그룹",
+  "when": "2026.4",
+  "order": 2026.3,
+  "event": "중국 전동화·AI 로드맵 발표",
+  "status": "발표",
+  "source_url": "https://www.volkswagen-group.com/en/press-releases/auto-china-2026-volkswagen-group-unveils-record-product-offensive-and-agentic-ai-roadmap-for-china-20333"
+ },
+ {
+  "id": "hmg_connect",
+  "company": "현대차그룹",
+  "when": "2026.5",
+  "order": 2026.38,
+  "event": "Pleos Connect 신형 그랜저 첫 적용(발표 일정)",
+  "status": "일정",
+  "source_url": "https://www.hyundai.com/worldwide/en/newsroom/detail/hyundai-motor-group-redefines-in-vehicle-experience-with-%25E2%2580%2598pleos-connect%25E2%2580%2599-next-generation-infotainment-system-0000001168"
+ },
+ {
+  "id": "vw_2026",
+  "company": "폭스바겐그룹",
+  "when": "2026",
+  "order": 2026.5,
+  "event": "중국 전동화 차량 20종 이상, CEA 차량에 AI 에이전트",
+  "status": "계획",
+  "source_url": "https://www.volkswagen-group.com/en/press-releases/auto-china-2026-volkswagen-group-unveils-record-product-offensive-and-agentic-ai-roadmap-for-china-20333"
+ },
+ {
+  "id": "hmg_pace",
+  "company": "현대차그룹",
+  "when": "2026 하반기",
+  "order": 2026.75,
+  "event": "SDV 페이스카(HW·SW 분리) 공개",
+  "status": "계획",
+  "source_url": "https://www.hyundai.com/worldwide/en/newsroom/detail/0000001062"
+ },
+ {
+  "id": "vw_cea2",
+  "company": "폭스바겐그룹",
+  "when": "2027",
+  "order": 2027.5,
+  "event": "CEA 2.0, 지능형 주행·콕핏 제어 통합",
+  "status": "계획",
+  "source_url": "https://www.volkswagen-group.com/en/press-releases/auto-china-2026-volkswagen-group-unveils-record-product-offensive-and-agentic-ai-roadmap-for-china-20333"
+ },
+ {
+  "id": "hmg_l2",
+  "company": "현대차그룹",
+  "when": "2027 말",
+  "order": 2027.9,
+  "event": "L2+ 구현(2025.3 발표 기준 목표)",
+  "status": "목표",
+  "source_url": "https://www.hyundai.com/worldwide/en/newsroom/detail/hyundai-motor-group-launches-%25E2%2580%2598pleos%25E2%2580%2599-software-brand%252C-unveiling-new-sdv-technologies-and-collaborations-0000000921"
+ },
+ {
+  "id": "vw_2030",
+  "company": "폭스바겐그룹",
+  "when": "2030",
+  "order": 2030.5,
+  "event": "중국 전동화 차량 50종(PHEV 포함)",
+  "status": "목표",
+  "source_url": "https://www.volkswagen-group.com/en/press-releases/auto-china-2026-volkswagen-group-unveils-record-product-offensive-and-agentic-ai-roadmap-for-china-20333"
+ },
+ {
+  "id": "hmg_2030",
+  "company": "현대차그룹",
+  "when": "2030",
+  "order": 2030.9,
+  "event": "Pleos Connect 약 2,000만 대 적용",
+  "status": "목표",
+  "target_man": 2000,
+  "source_url": "https://www.hyundai.com/worldwide/en/newsroom/detail/hyundai-motor-group-redefines-in-vehicle-experience-with-%25E2%2580%2598pleos-connect%25E2%2580%2599-next-generation-infotainment-system-0000001168"
+ }
+]

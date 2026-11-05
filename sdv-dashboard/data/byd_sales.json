@@ -1,0 +1,20 @@
+[
+ {
+  "id": "sep_overseas",
+  "item": "9월 해외 출하(승용·픽업)",
+  "units": 179877,
+  "yoy_pct": 153.9
+ },
+ {
+  "id": "sep_total",
+  "item": "9월 세계 판매",
+  "units": 463561,
+  "yoy_pct": 17
+ },
+ {
+  "id": "ytd_total",
+  "item": "1~9월 누적 판매(약)",
+  "units": 3130000,
+  "yoy_pct": -4
+ }
+]

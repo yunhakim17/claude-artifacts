@@ -1,0 +1,14 @@
+{
+  "description": "원본 CSV의 주제·감정 라벨로 리뷰 수를 집계한 표.",
+  "fixed": true,
+  "source": {
+    "kind": "file",
+    "name": "topic_sentiment.csv",
+    "url": "/_blob/d956d207549ec92c68c83f4e3ae50de1"
+  },
+  "title": "주제 × 감정 리뷰 수",
+  "updated": {
+    "at": "2026-10-18T15:42:00+09:00",
+    "by": "Claude"
+  }
+}
